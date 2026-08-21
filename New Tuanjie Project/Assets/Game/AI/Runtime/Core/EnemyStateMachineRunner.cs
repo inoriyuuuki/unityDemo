@@ -37,7 +37,15 @@ namespace FMBG.AI
                 return;
             }
 
-            context = new EnemyContext(actor, config, perception, motor, combat, health);
+            context = new EnemyContext(
+                actor,
+                config,
+                perception,
+                motor,
+                combat,
+                health,
+                actorRef.SkillController,
+                actorRef.SkillSelector);
 
             EnemyEntryNode entryNode = graph.FindNode<EnemyEntryNode>();
             anyStateNode = graph.FindNode<EnemyAnyStateNode>();

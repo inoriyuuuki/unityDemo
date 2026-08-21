@@ -1,4 +1,5 @@
 using FMBG.Combat;
+using FMBG.Skills;
 using UnityEngine;
 
 namespace FMBG.AI
@@ -14,6 +15,8 @@ namespace FMBG.AI
         [SerializeField] private EnemyMotor motor;
         [SerializeField] private EnemyPerception perception;
         [SerializeField] private CharacterCombat combat;
+        [SerializeField] private CharacterSkillController skillController;
+        [SerializeField] private SkillSelector skillSelector;
         [SerializeField] private EnemyStateMachineRunner stateMachine;
         [SerializeField] private Transform[] patrolPoints;
         [SerializeField] private Transform returnPoint;
@@ -23,6 +26,8 @@ namespace FMBG.AI
         public EnemyMotor Motor => motor;
         public EnemyPerception Perception => perception;
         public CharacterCombat Combat => combat;
+        public CharacterSkillController SkillController => skillController;
+        public SkillSelector SkillSelector => skillSelector;
         public EnemyStateMachineRunner StateMachine => stateMachine;
 
         private void Awake()

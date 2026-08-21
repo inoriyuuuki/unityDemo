@@ -1,4 +1,5 @@
 using FMBG.Combat;
+using FMBG.Skills;
 
 namespace FMBG.AI
 {
@@ -12,6 +13,8 @@ namespace FMBG.AI
         public EnemyMotor Motor { get; }
         public CharacterCombat Combat { get; }
         public Health Health { get; }
+        public CharacterSkillController SkillController { get; }
+        public SkillSelector SkillSelector { get; }
 
         public EnemyBlackboard Blackboard { get; }
 
@@ -21,7 +24,9 @@ namespace FMBG.AI
             EnemyPerception perception,
             EnemyMotor motor,
             CharacterCombat combat,
-            Health health)
+            Health health,
+            CharacterSkillController skillController = null,
+            SkillSelector skillSelector = null)
         {
             Actor = actor;
             Config = config;
@@ -29,6 +34,8 @@ namespace FMBG.AI
             Motor = motor;
             Combat = combat;
             Health = health;
+            SkillController = skillController;
+            SkillSelector = skillSelector;
             Blackboard = new EnemyBlackboard();
         }
     }

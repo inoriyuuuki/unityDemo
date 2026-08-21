@@ -13,18 +13,20 @@ MonoBehaviour:
   m_Name: Weapon_Pistol
   m_EditorClassIdentifier: 
   weaponId: 
-  displayName: 
+  displayName: "\u624B\u67AA"
   weaponPrefab: {fileID: 2814260069514447324, guid: f1432999857ed40bfaa24c3b0d893caf, type: 3}
-  damage: 10
+  damage: 12
   knockbackForce: 0
-  windupDuration: 0.2
+  windupDuration: 0.1
   activeDuration: 0.1
-  recoveryDuration: 0.4
+  recoveryDuration: 0.3
   canMoveWhileAttacking: 1
   attackMoveSpeedMultiplier: 0.5
   targetLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1536
+  basicAttack: {fileID: 11400000, guid: 38f04f17264774c249f10851044111fb, type: 2}
+  skills: []
   minAttackRange: 0
   maxAttackRange: 9
   preferredAttackRange: 6

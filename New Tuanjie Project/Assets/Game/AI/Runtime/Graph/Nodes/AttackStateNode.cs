@@ -26,6 +26,27 @@ namespace FMBG.AI
 
             context.Motor.FaceTowards(target.position, deltaTime);
 
+            // 优先使用技能控制器（Slate 技能），否则回退到武器基础攻击
+            if (context.SkillController != null && context.SkillController.IsCasting)
+            {
+                return;
+            }
+
+            if (context.SkillController != null && context.SkillSelector != null)
+            {
+                var weapon = context.Combat.CurrentWeaponConfig;
+                FMBG.Skills.SkillConfig skill =
+                    context.SkillSelector.SelectSkill(weapon, target);
+
+                if (skill != null)
+                {
+                    context.SkillController.TryCast(
+                        skill,
+                        new FMBG.Skills.SkillCastRequest(target.position, target));
+                    return;
+                }
+            }
+
             if (context.Combat.CurrentWeapon != null &&
                 !context.Combat.CurrentWeapon.IsAttacking)
             {
@@ -35,6 +56,12 @@ namespace FMBG.AI
 
         public override EnemyStateNode EvaluateTransition(EnemyContext context)
         {
+            // 技能播放过程中不因短暂距离变化退出 Attack
+            if (context.SkillController != null && context.SkillController.IsCasting)
+            {
+                return null;
+            }
+
             if (!context.Perception.CanSeeTarget)
             {
                 return GetConnectedNode<EnemyStateNode>(nameof(investigate));
@@ -58,6 +85,12 @@ namespace FMBG.AI
         public override void Exit(EnemyContext context)
         {
             context.Combat.CancelAttack();
+
+            if (context.SkillController != null)
+            {
+                context.SkillController.Interrupt();
+            }
         }
+
     }
 }

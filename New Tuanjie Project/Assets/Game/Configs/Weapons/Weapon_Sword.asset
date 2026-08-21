@@ -13,18 +13,20 @@ MonoBehaviour:
   m_Name: Weapon_Sword
   m_EditorClassIdentifier: 
   weaponId: 
-  displayName: 
+  displayName: "\u957F\u5251"
   weaponPrefab: {fileID: 614246700550641394, guid: ce15c3ce9ef664c3181fe70a2a0ea02a, type: 3}
-  damage: 10
+  damage: 20
   knockbackForce: 0
-  windupDuration: 0.2
-  activeDuration: 0.1
-  recoveryDuration: 0.4
+  windupDuration: 0.15
+  activeDuration: 0.15
+  recoveryDuration: 0.35
   canMoveWhileAttacking: 1
   attackMoveSpeedMultiplier: 0.5
   targetLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1536
+  basicAttack: {fileID: 11400000, guid: a459a476cec9e47439758f187e32c260, type: 2}
+  skills: []
   attackRange: 1.8
   preferredAttackRange: 1.4
   hitboxOffset: {x: 0, y: 0.8, z: 1}

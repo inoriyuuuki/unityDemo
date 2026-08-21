@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using FMBG.Skills;
 using UnityEngine;
 
 namespace FMBG.Combat
@@ -42,6 +44,13 @@ namespace FMBG.Combat
         public bool CanMoveWhileAttacking => canMoveWhileAttacking;
         public float AttackMoveSpeedMultiplier => attackMoveSpeedMultiplier;
         public LayerMask TargetLayers => targetLayers;
+
+        [Header("Skills")]
+        [SerializeField] private SkillConfig basicAttack;
+        [SerializeField] private SkillConfig[] skills;
+
+        public SkillConfig BasicAttack => basicAttack;
+        public IReadOnlyList<SkillConfig> Skills => skills;
 
         public abstract float MinAttackRange { get; }
         public abstract float MaxAttackRange { get; }

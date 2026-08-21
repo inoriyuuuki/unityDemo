@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using FMBG.AI;
 using FMBG.Combat;
+using FMBG.Skills;
+using FMBG.SlateClips;
+using Slate;
 using UnityEditor;
 using UnityEngine;
 using XNode;
@@ -21,6 +24,9 @@ namespace FMBG.EditorTools
             CreatePistol();
             CreateStateGraph();
             CreateMeleeGrunt();
+            CreateSwordSlashSkill();
+            CreatePistolShotSkill();
+            WireSwordSkills();
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -186,6 +192,137 @@ namespace FMBG.EditorTools
             return asset;
         }
 
+        private static void CreateSwordSlashSkill()
+        {
+            EnsureFolder("Assets/Game/Configs/Skills");
+            var skill = LoadOrCreate<SkillConfig>("Assets/Game/Configs/Skills/Skill_SwordSlash.asset");
+            if (skill == null)
+            {
+                return;
+            }
+
+            skill.name = "Skill_SwordSlash";
+            SetField(skill, "skillId", "sword_slash");
+            SetField(skill, "displayName", "挥剑斩");
+            SetField(skill, "targetType", SkillTargetType.Unit);
+            SetField(skill, "cooldown", 1.2f);
+            SetField(skill, "minCastRange", 0f);
+            SetField(skill, "maxCastRange", 2.5f);
+            SetField(skill, "lockMovement", true);
+            SetField(skill, "faceTarget", true);
+            SetField(skill, "canBeInterrupted", true);
+            SetField(skill, "damageMultiplier", 1f);
+
+            // 创建 Slate 时间轴 prefab（先添加 clip，再保存）
+            var timeline = CreateSkillTimeline(
+                "Assets/Game/Prefabs/Skill_SwordSlash.prefab",
+                (casterGroup, gameplayTrack, effectTrack) =>
+                {
+                    // Gameplay Track: 伤害窗口 (0.20 - 0.35)
+                    var hitWindow = gameplayTrack.AddAction<MeleeHitWindowClip>(0.20f);
+                    SetField(hitWindow, "hitboxOffset", new Vector3(0f, 0.8f, 1f));
+                    SetField(hitWindow, "hitboxSize", new Vector3(1.2f, 1.5f, 1.8f));
+                    SetField(hitWindow, "targetLayers", LayerMask.GetMask("Enemy", "Player"));
+                    SetProperty(hitWindow, "length", 0.15f);
+
+                    // Effect Track: 特效 + 音效
+                    var trail = effectTrack.AddAction<SpawnEffectClip>(0.18f);
+                    SetField(trail, "offset", Vector3.zero);
+                    SetField(trail, "destroyDelay", 0.3f);
+
+                    effectTrack.AddAction<PlaySkillAudioClip>(0.18f);
+                });
+
+            SetField(skill, "timelinePrefab", timeline);
+            EditorUtility.SetDirty(skill);
+            AssetDatabase.SaveAssets();
+        }
+
+        private static void CreatePistolShotSkill()
+        {
+            EnsureFolder("Assets/Game/Configs/Skills");
+            var skill = LoadOrCreate<SkillConfig>("Assets/Game/Configs/Skills/Skill_PistolShot.asset");
+            if (skill == null)
+            {
+                return;
+            }
+
+            skill.name = "Skill_PistolShot";
+            SetField(skill, "skillId", "pistol_shot");
+            SetField(skill, "displayName", "手枪射击");
+            SetField(skill, "targetType", SkillTargetType.Position);
+            SetField(skill, "cooldown", 0.8f);
+            SetField(skill, "minCastRange", 0f);
+            SetField(skill, "maxCastRange", 12f);
+            SetField(skill, "lockMovement", true);
+            SetField(skill, "faceTarget", true);
+            SetField(skill, "canBeInterrupted", true);
+            SetField(skill, "damageMultiplier", 1f);
+
+            var timeline = CreateSkillTimeline(
+                "Assets/Game/Prefabs/Skill_PistolShot.prefab",
+                (casterGroup, gameplayTrack, effectTrack) =>
+                {
+                    // Gameplay Track: 生成弹丸 (0.12)
+                    var spawn = gameplayTrack.AddAction<SpawnProjectileClip>(0.12f);
+                    SetField(spawn, "projectilePrefab",
+                        AssetDatabase.LoadAssetAtPath<FMBG.Combat.Projectile>("Assets/Game/Prefabs/Projectile_Pistol.prefab"));
+                    SetField(spawn, "projectileSpeed", 18f);
+                    SetField(spawn, "projectileLifetime", 2.5f);
+                    SetField(spawn, "spreadAngle", 0f);
+                    SetField(spawn, "projectileCount", 1);
+                    SetField(spawn, "targetLayers", LayerMask.GetMask("Enemy", "Player"));
+
+                    effectTrack.AddAction<PlaySkillAudioClip>(0.12f);
+                });
+
+            SetField(skill, "timelinePrefab", timeline);
+            EditorUtility.SetDirty(skill);
+            AssetDatabase.SaveAssets();
+        }
+
+        private static void WireSwordSkills()
+        {
+            var sword = AssetDatabase.LoadAssetAtPath<MeleeWeaponConfig>("Assets/Game/Configs/Weapons/Weapon_Sword.asset");
+            var slash = AssetDatabase.LoadAssetAtPath<SkillConfig>("Assets/Game/Configs/Skills/Skill_SwordSlash.asset");
+            if (sword != null && slash != null)
+            {
+                SetField(sword, "basicAttack", slash);
+                EditorUtility.SetDirty(sword);
+            }
+
+            var pistol = AssetDatabase.LoadAssetAtPath<RangedWeaponConfig>("Assets/Game/Configs/Weapons/Weapon_Pistol.asset");
+            var shot = AssetDatabase.LoadAssetAtPath<SkillConfig>("Assets/Game/Configs/Skills/Skill_PistolShot.asset");
+            if (pistol != null && shot != null)
+            {
+                SetField(pistol, "basicAttack", shot);
+                EditorUtility.SetDirty(pistol);
+            }
+
+            AssetDatabase.SaveAssets();
+        }
+
+        private static Cutscene CreateSkillTimeline(
+            string prefabPath,
+            System.Action<ActorGroup, ActorActionTrack, ActorActionTrack> configure)
+        {
+            var go = new GameObject("SkillTimeline");
+            var cutscene = go.AddComponent<Cutscene>();
+
+            var casterGroup = cutscene.AddGroup<ActorGroup>();
+            casterGroup.name = "Caster";
+
+            var gameplayTrack = casterGroup.AddTrack<ActorActionTrack>("Gameplay");
+            var effectTrack = casterGroup.AddTrack<ActorActionTrack>("Effect");
+
+            // 保存前先配置 clip（此时对象尚未销毁）
+            configure?.Invoke(casterGroup, gameplayTrack, effectTrack);
+
+            var prefab = PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
+            Object.DestroyImmediate(go);
+            return prefab != null ? prefab.GetComponent<Cutscene>() : null;
+        }
+
         private static T LoadOrCreate<T>(string path) where T : ScriptableObject
         {
             var existing = AssetDatabase.LoadAssetAtPath<T>(path);
@@ -202,11 +339,44 @@ namespace FMBG.EditorTools
         // ---- 便捷设置方法（通过反射访问私有字段，避免额外编辑器 API）----
         private static void SetField(Object obj, string fieldName, object value)
         {
-            var field = obj.GetType().GetField(fieldName,
-                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            System.Type type = obj.GetType();
+            var flags = System.Reflection.BindingFlags.Instance |
+                        System.Reflection.BindingFlags.NonPublic |
+                        System.Reflection.BindingFlags.Public;
+
+            var field = type.GetField(fieldName, flags);
+            while (field == null && type.BaseType != null)
+            {
+                type = type.BaseType;
+                field = type.GetField(fieldName, flags);
+            }
+
             if (field != null)
             {
-                field.SetValue(obj, value);
+                if (field.FieldType == typeof(LayerMask) && value is int intValue)
+                {
+                    field.SetValue(obj, (LayerMask)intValue);
+                }
+                else
+                {
+                    field.SetValue(obj, value);
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[GameAssetFactory] 找不到字段: " + fieldName);
+            }
+        }
+
+        private static void SetProperty(Object obj, string propertyName, object value)
+        {
+            var prop = obj.GetType().GetProperty(propertyName,
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.FlattenHierarchy);
+            if (prop != null && prop.CanWrite)
+            {
+                prop.SetValue(obj, value);
             }
         }
 

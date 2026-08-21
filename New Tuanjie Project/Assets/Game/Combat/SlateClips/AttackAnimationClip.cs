@@ -37,7 +37,7 @@ namespace FMBG.SlateClips
                 return;
             }
 
-            var visual = actor.GetComponentInParent<CharacterVisual>();
+            var visual = actor.GetComponentInChildren<CharacterVisual>(true);
             if (visual != null)
             {
                 visual.PlayAttackAnimation(Mathf.Max(0.1f, length));

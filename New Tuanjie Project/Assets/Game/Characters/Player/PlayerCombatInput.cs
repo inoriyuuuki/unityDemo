@@ -1,15 +1,29 @@
 using FMBG.Combat;
+using FMBG.Skills;
 using UnityEngine;
 
 namespace FMBG.Characters
 {
-    /// <summary>玩家攻击输入：鼠标左键 → CharacterCombat.TryAttack。</summary>
+    /// <summary>
+    /// 玩家攻击输入：左键近战（剑技能），右键远程（手枪技能）。
+    /// 通过 CharacterSkillController 释放，含冷却。
+    /// </summary>
     public sealed class PlayerCombatInput : MonoBehaviour
     {
-        [SerializeField] private CharacterCombat combat;
+        [Header("References")]
+        [SerializeField] private CharacterSkillController skillController;
         [SerializeField] private Health health;
         [SerializeField] private Camera mainCamera;
         [SerializeField] private LayerMask groundLayer = ~0;
+
+        [Header("Weapons / Skills")]
+        [SerializeField] private WeaponConfig meleeWeapon;   // 剑
+        [SerializeField] private WeaponConfig rangedWeapon;  // 手枪
+        [SerializeField] private SkillConfig meleeSkill;     // 近战技能（挥剑斩）
+        [SerializeField] private SkillConfig rangedSkill;    // 远程技能（手枪射击）
+
+        public SkillConfig MeleeSkill => meleeSkill;
+        public SkillConfig RangedSkill => rangedSkill;
 
         private void Awake()
         {
@@ -21,40 +35,43 @@ namespace FMBG.Characters
 
         private void Update()
         {
-            if (combat == null)
+            if (skillController == null || health == null || !health.IsAlive)
             {
                 return;
             }
 
-            // 死亡后禁止攻击
-            if (health != null && !health.IsAlive)
+            Vector3 targetPos = GetGroundTarget();
+
+            // 左键：近战
+            if (Input.GetMouseButtonDown(0) && meleeSkill != null)
             {
-                return;
+                skillController.TryCast(meleeSkill, new SkillCastRequest(targetPos, null), meleeWeapon);
             }
 
-            if (!Input.GetMouseButtonDown(0))
+            // 右键：远程
+            if (Input.GetMouseButtonDown(1) && rangedSkill != null)
             {
-                return;
+                skillController.TryCast(rangedSkill, new SkillCastRequest(targetPos, null), rangedWeapon);
             }
+        }
 
+        private Vector3 GetGroundTarget()
+        {
             if (mainCamera == null)
             {
                 mainCamera = Camera.main;
-                if (mainCamera == null)
+            }
+
+            if (mainCamera != null)
+            {
+                Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out RaycastHit hit, 100f, groundLayer))
                 {
-                    return;
+                    return hit.point;
                 }
             }
 
-            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit, 100f, groundLayer))
-            {
-                combat.TryAttack(hit.point);
-            }
-            else
-            {
-                combat.TryAttack(transform.position + transform.forward * 5f);
-            }
+            return transform.position + transform.forward * 5f;
         }
     }
 }

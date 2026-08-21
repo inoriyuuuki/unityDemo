@@ -20,6 +20,14 @@ namespace FMBG.Skills
 
         public bool TryCast(SkillConfig skill, SkillCastRequest request)
         {
+            return TryCast(skill, request, null);
+        }
+
+        /// <summary>
+        /// 释放技能。可指定用于伤害结算的武器配置（玩家双武器：左键近战/右键远程）。
+        /// </summary>
+        public bool TryCast(SkillConfig skill, SkillCastRequest request, WeaponConfig weaponOverride)
+        {
             if (skill == null || IsCasting || IsOnCooldown(skill))
             {
                 return false;
@@ -35,11 +43,15 @@ namespace FMBG.Skills
                 combat.FaceTowards(request.TargetPosition);
             }
 
+            WeaponConfig weapon = weaponOverride != null
+                ? weaponOverride
+                : (combat != null ? combat.CurrentWeaponConfig : null);
+
             var context = new SkillExecutionContext(
                 this,
                 combat,
                 skill,
-                combat != null ? combat.CurrentWeaponConfig : null,
+                weapon,
                 request.Target,
                 request.TargetPosition);
 
@@ -96,6 +108,17 @@ namespace FMBG.Skills
             }
 
             return Time.time < endTime;
+        }
+
+        /// <summary>冷却剩余秒数（供 UI 显示）。</summary>
+        public float GetCooldownRemaining(SkillConfig skill)
+        {
+            if (skill == null || !cooldowns.TryGetValue(skill.SkillId, out float endTime))
+            {
+                return 0f;
+            }
+
+            return Mathf.Max(0f, endTime - Time.time);
         }
 
         private bool IsInRange(SkillConfig skill, SkillCastRequest request)

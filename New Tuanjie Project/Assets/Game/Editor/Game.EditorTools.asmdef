@@ -1,0 +1,21 @@
+{
+    "name": "Game.EditorTools",
+    "references": [
+        "Game.Runtime",
+        "Game.Editor",
+        "XNode",
+        "XNodeEditor",
+        "SLATE"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

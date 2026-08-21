@@ -54,32 +54,15 @@ namespace FMBG.AI
             }
         }
 
+        /// <summary>技能施法过程中不切换状态（全局守卫）。</summary>
         public override EnemyStateNode EvaluateTransition(EnemyContext context)
         {
-            // 技能播放过程中不因短暂距离变化退出 Attack
             if (context.SkillController != null && context.SkillController.IsCasting)
             {
                 return null;
             }
 
-            if (!context.Perception.CanSeeTarget)
-            {
-                return GetConnectedNode<EnemyStateNode>(nameof(investigate));
-            }
-
-            Transform target = context.Perception.Target;
-            if (target == null)
-            {
-                return GetConnectedNode<EnemyStateNode>(nameof(investigate));
-            }
-
-            bool outsideRange = !context.Combat.IsTargetInAttackRange(target, exitRangeTolerance);
-            if (outsideRange)
-            {
-                return GetConnectedNode<EnemyStateNode>(nameof(chase));
-            }
-
-            return null;
+            return base.EvaluateTransition(context);
         }
 
         public override void Exit(EnemyContext context)
@@ -91,6 +74,5 @@ namespace FMBG.AI
                 context.SkillController.Interrupt();
             }
         }
-
     }
 }

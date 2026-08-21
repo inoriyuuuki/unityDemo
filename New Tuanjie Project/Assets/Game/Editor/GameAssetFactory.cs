@@ -33,6 +33,64 @@ namespace FMBG.EditorTools
             Debug.Log("[GameAssetFactory] 演示资产创建完成。");
         }
 
+        /// <summary>为状态节点配置一个端口条件（默认设置切换阈值）。</summary>
+        private static void SetPortCondition(
+            Node node,
+            string portName,
+            TransitionConditionType type)
+        {
+            if (node is not EnemyStateNode stateNode)
+            {
+                return;
+            }
+
+            var list = stateNode.PortConditions;
+
+            // 若该端口已有条件则替换，否则追加（避免覆盖其他端口）
+            int existing = list.FindIndex(p => p != null && p.PortName == portName);
+            PortCondition entry;
+            if (existing >= 0)
+            {
+                entry = new PortCondition(portName, type);
+                list[existing] = entry;
+            }
+            else
+            {
+                entry = new PortCondition(portName, type);
+                list.Add(entry);
+            }
+
+            // 为特定条件设置默认阈值
+            var condition = entry.Condition;
+            switch (type)
+            {
+                case TransitionConditionType.TimerElapsed:
+                    // Idle/Investigate 使用节点自身的时长字段
+                    if (stateNode is IdleStateNode idleNode)
+                    {
+                        condition.SetDuration(idleNode.idleDuration);
+                    }
+                    else if (stateNode is InvestigateStateNode invNode)
+                    {
+                        condition.SetDuration(invNode.investigateDuration);
+                    }
+                    else
+                    {
+                        condition.SetDuration(2f);
+                    }
+                    break;
+
+                case TransitionConditionType.TargetOutOfAttackRange:
+                    if (stateNode is AttackStateNode attackNode)
+                    {
+                        condition.SetTolerance(attackNode.exitRangeTolerance);
+                    }
+                    break;
+            }
+
+            EditorUtility.SetDirty(stateNode);
+        }
+
         private static Node CreateNode(EnemyStateGraph graph, System.Type type)
         {
             Node node = graph.AddNode(type);
@@ -161,6 +219,25 @@ namespace FMBG.EditorTools
             returnNode.GetOutputPort("patrol").Connect(patrol.GetInputPort("entry"));
             returnNode.GetOutputPort("chase").Connect(chase.GetInputPort("entry"));
 
+            // 为各节点配置默认切换条件（可在 xNode Inspector 中修改）
+            SetPortCondition(idle, "patrol", TransitionConditionType.TimerElapsed);
+            SetPortCondition(idle, "chase", TransitionConditionType.TargetVisible);
+
+            SetPortCondition(patrol, "idle", TransitionConditionType.ReachedDestination);
+            SetPortCondition(patrol, "chase", TransitionConditionType.TargetVisible);
+
+            SetPortCondition(chase, "attack", TransitionConditionType.TargetInAttackRange);
+            SetPortCondition(chase, "investigate", TransitionConditionType.TargetLost);
+
+            SetPortCondition(attack, "chase", TransitionConditionType.TargetOutOfAttackRange);
+            SetPortCondition(attack, "investigate", TransitionConditionType.TargetLost);
+
+            SetPortCondition(investigate, "chase", TransitionConditionType.TargetVisible);
+            SetPortCondition(investigate, "returnNode", TransitionConditionType.TimerElapsed);
+
+            SetPortCondition(returnNode, "patrol", TransitionConditionType.ReachedDestination);
+            SetPortCondition(returnNode, "chase", TransitionConditionType.TargetVisible);
+
             graph.name = "Enemy_DefaultGraph";
             EditorUtility.SetDirty(graph);
             return graph;
@@ -184,7 +261,7 @@ namespace FMBG.EditorTools
             asset.SetStateGraph(graph);
             asset.SetVitals(80f, 0f, 2f);
             asset.SetMovement(2f, 4.5f, 12f, 360f, 0.2f);
-            asset.SetPerception(10f, 100f, 0.1f, 0.6f, 3f,
+            asset.SetPerception(10f, 100f, 0.1f, 1.2f, 3f,
                 LayerMask.GetMask("Player"), LayerMask.GetMask("Obstacle"));
             asset.SetBehaviour(1f, 3f, 0.15f, 0.4f, 3f, 180f, 0.2f);
             asset.SetCombat(weapon, 360f, 0.3f, false);
@@ -218,19 +295,19 @@ namespace FMBG.EditorTools
                 "Assets/Game/Prefabs/Skill_SwordSlash.prefab",
                 (casterGroup, gameplayTrack, effectTrack) =>
                 {
-                    // Gameplay Track: 伤害窗口 (0.20 - 0.35)
-                    var hitWindow = gameplayTrack.AddAction<MeleeHitWindowClip>(0.20f);
+                    // Gameplay Track: 伤害窗口 (0.08 - 0.18)
+                    var hitWindow = gameplayTrack.AddAction<MeleeHitWindowClip>(0.08f);
                     SetField(hitWindow, "hitboxOffset", new Vector3(0f, 0.8f, 1f));
                     SetField(hitWindow, "hitboxSize", new Vector3(1.2f, 1.5f, 1.8f));
                     SetField(hitWindow, "targetLayers", LayerMask.GetMask("Enemy", "Player"));
-                    SetProperty(hitWindow, "length", 0.15f);
+                    SetProperty(hitWindow, "length", 0.10f);
 
                     // Effect Track: 特效 + 音效
-                    var trail = effectTrack.AddAction<SpawnEffectClip>(0.18f);
+                    var trail = effectTrack.AddAction<SpawnEffectClip>(0.06f);
                     SetField(trail, "offset", Vector3.zero);
                     SetField(trail, "destroyDelay", 0.3f);
 
-                    effectTrack.AddAction<PlaySkillAudioClip>(0.18f);
+                    effectTrack.AddAction<PlaySkillAudioClip>(0.06f);
                 });
 
             SetField(skill, "timelinePrefab", timeline);
@@ -263,8 +340,8 @@ namespace FMBG.EditorTools
                 "Assets/Game/Prefabs/Skill_PistolShot.prefab",
                 (casterGroup, gameplayTrack, effectTrack) =>
                 {
-                    // Gameplay Track: 生成弹丸 (0.12)
-                    var spawn = gameplayTrack.AddAction<SpawnProjectileClip>(0.12f);
+                    // Gameplay Track: 生成弹丸 (0.05)
+                    var spawn = gameplayTrack.AddAction<SpawnProjectileClip>(0.05f);
                     SetField(spawn, "projectilePrefab",
                         AssetDatabase.LoadAssetAtPath<FMBG.Combat.Projectile>("Assets/Game/Prefabs/Projectile_Pistol.prefab"));
                     SetField(spawn, "projectileSpeed", 18f);
@@ -273,7 +350,7 @@ namespace FMBG.EditorTools
                     SetField(spawn, "projectileCount", 1);
                     SetField(spawn, "targetLayers", LayerMask.GetMask("Enemy", "Player"));
 
-                    effectTrack.AddAction<PlaySkillAudioClip>(0.12f);
+                    effectTrack.AddAction<PlaySkillAudioClip>(0.05f);
                 });
 
             SetField(skill, "timelinePrefab", timeline);

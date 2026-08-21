@@ -17,21 +17,6 @@ namespace FMBG.AI
             context.Motor.Stop();
         }
 
-        public override EnemyStateNode EvaluateTransition(EnemyContext context)
-        {
-            if (context.Perception.CanSeeTarget)
-            {
-                return GetConnectedNode<EnemyStateNode>(nameof(chase));
-            }
-
-            if (context.Blackboard.StateTime >= idleDuration)
-            {
-                return GetConnectedNode<EnemyStateNode>(nameof(patrol));
-            }
-
-            return null;
-        }
-
         public override void Tick(EnemyContext context, float deltaTime)
         {
             context.Blackboard.StateTime += deltaTime;

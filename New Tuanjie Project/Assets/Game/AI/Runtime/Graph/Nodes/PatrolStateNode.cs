@@ -21,25 +21,6 @@ namespace FMBG.AI
             }
         }
 
-        public override EnemyStateNode EvaluateTransition(EnemyContext context)
-        {
-            if (context.Perception.CanSeeTarget)
-            {
-                return GetConnectedNode<EnemyStateNode>(nameof(chase));
-            }
-
-            if (context.Blackboard.HasPatrolPoints &&
-                context.Blackboard.PatrolPoints.Length > 0 &&
-                context.Motor.ReachedDestination())
-            {
-                context.Blackboard.PatrolPointIndex =
-                    (context.Blackboard.PatrolPointIndex + 1) % context.Blackboard.PatrolPoints.Length;
-                return GetConnectedNode<EnemyStateNode>(nameof(idle));
-            }
-
-            return null;
-        }
-
         public override void Tick(EnemyContext context, float deltaTime)
         {
             if (!context.Blackboard.HasPatrolPoints || context.Blackboard.PatrolPoints.Length == 0)
@@ -49,6 +30,12 @@ namespace FMBG.AI
 
             int index = context.Blackboard.PatrolPointIndex;
             context.Motor.MoveTo(context.Blackboard.PatrolPoints[index]);
+
+            if (context.Motor.ReachedDestination())
+            {
+                context.Blackboard.PatrolPointIndex =
+                    (context.Blackboard.PatrolPointIndex + 1) % context.Blackboard.PatrolPoints.Length;
+            }
         }
 
         public override void Exit(EnemyContext context)

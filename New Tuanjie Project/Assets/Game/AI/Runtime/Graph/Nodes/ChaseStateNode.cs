@@ -46,22 +46,6 @@ namespace FMBG.AI
             context.Motor.MoveTo(target.position);
         }
 
-        public override EnemyStateNode EvaluateTransition(EnemyContext context)
-        {
-            if (!context.Perception.CanSeeTarget)
-            {
-                return GetConnectedNode<EnemyStateNode>(nameof(investigate));
-            }
-
-            Transform target = context.Perception.Target;
-            if (target != null && context.Combat.IsTargetInAttackRange(target))
-            {
-                return GetConnectedNode<EnemyStateNode>(nameof(attack));
-            }
-
-            return null;
-        }
-
         public override void Exit(EnemyContext context)
         {
             context.Motor.Stop();

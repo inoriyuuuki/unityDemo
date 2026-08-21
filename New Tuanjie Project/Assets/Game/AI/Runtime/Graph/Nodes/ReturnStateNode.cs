@@ -18,21 +18,6 @@ namespace FMBG.AI
             context.Motor.MoveTo(returnTarget);
         }
 
-        public override EnemyStateNode EvaluateTransition(EnemyContext context)
-        {
-            if (context.Perception.CanSeeTarget)
-            {
-                return GetConnectedNode<EnemyStateNode>(nameof(chase));
-            }
-
-            if (context.Motor.ReachedDestination())
-            {
-                return GetConnectedNode<EnemyStateNode>(nameof(patrol));
-            }
-
-            return null;
-        }
-
         public override void Exit(EnemyContext context)
         {
             context.Motor.Stop();

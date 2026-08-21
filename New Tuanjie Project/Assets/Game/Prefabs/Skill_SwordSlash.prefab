@@ -134,7 +134,7 @@ MonoBehaviour:
   destroyDelay: 0.3
   _length: 0.01
   _blendIn: 0
-  _blendOut: 0.010000002
+  _blendOut: 0
 --- !u!114 &31728695202908416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,7 +153,7 @@ MonoBehaviour:
   audioClip: {fileID: 0}
   volume: 1
   _length: 0.01
-  _blendIn: 0.010000002
+  _blendIn: 0
   _blendOut: 0
 --- !u!1 &1323623708384682615
 GameObject:
@@ -258,7 +258,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _name: 
   _color: {r: 1, g: 1, b: 1, a: 1}
-  _active: 0
+  _active: 1
   _isLocked: 0
   _actionClips: []
   _customHeight: 300

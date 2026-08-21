@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:yousandi.cn,2023:
---- !u!114 &-8334640975560672660
+--- !u!114 &-9140926354708420325
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,133 +9,105 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0688bbb4b971c4cd39c2d8d85672b5cf, type: 3}
-  m_Name: ChaseStateNode
+  m_Script: {fileID: 11500000, guid: 380a909cba7154acbb4cc3a0e2f22ec6, type: 3}
+  m_Name: IdleStateNode
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -72, y: 40}
+  position: {x: -300, y: -100}
   ports:
     keys:
-    - attack
-    - investigate
-    - entry
-    values:
-    - _fieldName: attack
-      _node: {fileID: -8334640975560672660}
-      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: entry
-        node: {fileID: 8290701939830850005}
-        reroutePoints: []
-      _direction: 1
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: investigate
-      _node: {fileID: -8334640975560672660}
-      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: entry
-        node: {fileID: -6814847032895261915}
-        reroutePoints: []
-      _direction: 1
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: entry
-      _node: {fileID: -8334640975560672660}
-      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: chase
-        node: {fileID: -7227634033606320747}
-        reroutePoints: []
-      - fieldName: chase
-        node: {fileID: -7549870151450103269}
-        reroutePoints: []
-      - fieldName: chase
-        node: {fileID: 8290701939830850005}
-        reroutePoints: []
-      - fieldName: chase
-        node: {fileID: -6814847032895261915}
-        reroutePoints: []
-      - fieldName: chase
-        node: {fileID: -2551656865758930373}
-        reroutePoints: []
-      _direction: 0
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-  entry: {fileID: 0}
-  attack: {fileID: 0}
-  investigate: {fileID: 0}
-  repathInterval: 0.15
-  stoppingDistanceTolerance: 0.1
---- !u!114 &-7549870151450103269
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1347bc5062a046e3827c7851e3a639a, type: 3}
-  m_Name: PatrolStateNode
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: -8, y: -248}
-  ports:
-    keys:
-    - idle
+    - patrol
     - chase
     - entry
     values:
-    - _fieldName: idle
-      _node: {fileID: -7549870151450103269}
+    - _fieldName: patrol
+      _node: {fileID: -9140926354708420325}
       _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       connections:
       - fieldName: entry
-        node: {fileID: -7227634033606320747}
+        node: {fileID: 4227239231421679407}
         reroutePoints: []
       _direction: 1
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: chase
-      _node: {fileID: -7549870151450103269}
+      _node: {fileID: -9140926354708420325}
       _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       connections:
       - fieldName: entry
-        node: {fileID: -8334640975560672660}
+        node: {fileID: 4891963895828758980}
         reroutePoints: []
       _direction: 1
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: entry
-      _node: {fileID: -7549870151450103269}
+      _node: {fileID: -9140926354708420325}
       _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       connections:
-      - fieldName: patrol
-        node: {fileID: -7227634033606320747}
+      - fieldName: start
+        node: {fileID: 5229330413435850661}
         reroutePoints: []
-      - fieldName: patrol
-        node: {fileID: -2551656865758930373}
+      - fieldName: idle
+        node: {fileID: 4227239231421679407}
         reroutePoints: []
       _direction: 0
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
   entry: {fileID: 0}
-  idle: {fileID: 0}
+  portConditions:
+  - portName: patrol
+    condition:
+      type: 4
+      duration: 2
+      tolerance: 0.4
+      healthThreshold: 0.3
+  - portName: chase
+    condition:
+      type: 0
+      duration: 2
+      tolerance: 0.4
+      healthThreshold: 0.3
+  patrol: {fileID: 0}
   chase: {fileID: 0}
---- !u!114 &-7468453467823350127
+  idleDuration: 2
+--- !u!114 &-6986774174177318639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07d46138390bb4d378cc32d1808225f3, type: 3}
+  m_Name: EnemyAnyStateNode
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 300, y: 300}
+  ports:
+    keys:
+    - dead
+    values:
+    - _fieldName: dead
+      _node: {fileID: -6986774174177318639}
+      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: entry
+        node: {fileID: -956102419084380606}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  dead: {fileID: 0}
+--- !u!114 &-956102419084380606
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -154,19 +126,20 @@ MonoBehaviour:
     - entry
     values:
     - _fieldName: entry
-      _node: {fileID: -7468453467823350127}
+      _node: {fileID: -956102419084380606}
       _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       connections:
       - fieldName: dead
-        node: {fileID: 1463182209163411293}
+        node: {fileID: -6986774174177318639}
         reroutePoints: []
       _direction: 0
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
   entry: {fileID: 0}
---- !u!114 &-7227634033606320747
+  portConditions: []
+--- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -175,155 +148,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 380a909cba7154acbb4cc3a0e2f22ec6, type: 3}
-  m_Name: IdleStateNode
+  m_Script: {fileID: 11500000, guid: 4fb8cfdd973eb4fe58d298ac64aa4554, type: 3}
+  m_Name: Enemy_DefaultGraph
   m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: -344, y: -136}
-  ports:
-    keys:
-    - patrol
-    - chase
-    - entry
-    values:
-    - _fieldName: patrol
-      _node: {fileID: -7227634033606320747}
-      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: entry
-        node: {fileID: -7549870151450103269}
-        reroutePoints: []
-      _direction: 1
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: chase
-      _node: {fileID: -7227634033606320747}
-      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: entry
-        node: {fileID: -8334640975560672660}
-        reroutePoints: []
-      _direction: 1
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: entry
-      _node: {fileID: -7227634033606320747}
-      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: start
-        node: {fileID: -2677664861973534614}
-        reroutePoints: []
-      - fieldName: idle
-        node: {fileID: -7549870151450103269}
-        reroutePoints: []
-      _direction: 0
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-  entry: {fileID: 0}
-  patrol: {fileID: 0}
-  chase: {fileID: 0}
-  idleDuration: 2
---- !u!114 &-6814847032895261915
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a966cd3dd3e34cb591a4a70cc4365e7, type: 3}
-  m_Name: InvestigateStateNode
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: 216, y: 120}
-  ports:
-    keys:
-    - chase
-    - returnNode
-    - entry
-    values:
-    - _fieldName: chase
-      _node: {fileID: -6814847032895261915}
-      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: entry
-        node: {fileID: -8334640975560672660}
-        reroutePoints: []
-      _direction: 1
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: returnNode
-      _node: {fileID: -6814847032895261915}
-      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: entry
-        node: {fileID: -2551656865758930373}
-        reroutePoints: []
-      _direction: 1
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-    - _fieldName: entry
-      _node: {fileID: -6814847032895261915}
-      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: investigate
-        node: {fileID: -8334640975560672660}
-        reroutePoints: []
-      - fieldName: investigate
-        node: {fileID: 8290701939830850005}
-        reroutePoints: []
-      _direction: 0
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-  entry: {fileID: 0}
-  chase: {fileID: 0}
-  returnNode: {fileID: 0}
-  investigateDuration: 3
---- !u!114 &-2677664861973534614
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae08776afe8904edc94e183cb7fb347d, type: 3}
-  m_Name: EnemyEntryNode
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: -568, y: -216}
-  ports:
-    keys:
-    - start
-    values:
-    - _fieldName: start
-      _node: {fileID: -2677664861973534614}
-      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: entry
-        node: {fileID: -7227634033606320747}
-        reroutePoints: []
-      _direction: 1
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-  start: {fileID: 0}
---- !u!114 &-2551656865758930373
+  nodes:
+  - {fileID: 5229330413435850661}
+  - {fileID: -6986774174177318639}
+  - {fileID: -9140926354708420325}
+  - {fileID: 4227239231421679407}
+  - {fileID: 4891963895828758980}
+  - {fileID: 5716696375431665088}
+  - {fileID: 5971294697155525897}
+  - {fileID: 1460425117481906771}
+  - {fileID: -956102419084380606}
+--- !u!114 &1460425117481906771
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -344,45 +182,58 @@ MonoBehaviour:
     - entry
     values:
     - _fieldName: patrol
-      _node: {fileID: -2551656865758930373}
+      _node: {fileID: 1460425117481906771}
       _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       connections:
       - fieldName: entry
-        node: {fileID: -7549870151450103269}
+        node: {fileID: 4227239231421679407}
         reroutePoints: []
       _direction: 1
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: chase
-      _node: {fileID: -2551656865758930373}
+      _node: {fileID: 1460425117481906771}
       _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       connections:
       - fieldName: entry
-        node: {fileID: -8334640975560672660}
+        node: {fileID: 4891963895828758980}
         reroutePoints: []
       _direction: 1
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: entry
-      _node: {fileID: -2551656865758930373}
+      _node: {fileID: 1460425117481906771}
       _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       connections:
       - fieldName: returnNode
-        node: {fileID: -6814847032895261915}
+        node: {fileID: 5971294697155525897}
         reroutePoints: []
       _direction: 0
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
   entry: {fileID: 0}
+  portConditions:
+  - portName: patrol
+    condition:
+      type: 5
+      duration: 2
+      tolerance: 0.4
+      healthThreshold: 0.3
+  - portName: chase
+    condition:
+      type: 0
+      duration: 2
+      tolerance: 0.4
+      healthThreshold: 0.3
   patrol: {fileID: 0}
   chase: {fileID: 0}
---- !u!114 &11400000
+--- !u!114 &4227239231421679407
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -391,51 +242,190 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4fb8cfdd973eb4fe58d298ac64aa4554, type: 3}
-  m_Name: Enemy_DefaultGraph
-  m_EditorClassIdentifier: 
-  nodes:
-  - {fileID: -2677664861973534614}
-  - {fileID: 1463182209163411293}
-  - {fileID: -7227634033606320747}
-  - {fileID: -7549870151450103269}
-  - {fileID: -8334640975560672660}
-  - {fileID: 8290701939830850005}
-  - {fileID: -6814847032895261915}
-  - {fileID: -2551656865758930373}
-  - {fileID: -7468453467823350127}
---- !u!114 &1463182209163411293
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07d46138390bb4d378cc32d1808225f3, type: 3}
-  m_Name: EnemyAnyStateNode
+  m_Script: {fileID: 11500000, guid: f1347bc5062a046e3827c7851e3a639a, type: 3}
+  m_Name: PatrolStateNode
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 300, y: 300}
+  position: {x: -300, y: 100}
   ports:
     keys:
-    - dead
+    - idle
+    - chase
+    - entry
     values:
-    - _fieldName: dead
-      _node: {fileID: 1463182209163411293}
+    - _fieldName: idle
+      _node: {fileID: 4227239231421679407}
       _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       connections:
       - fieldName: entry
-        node: {fileID: -7468453467823350127}
+        node: {fileID: -9140926354708420325}
         reroutePoints: []
       _direction: 1
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
-  dead: {fileID: 0}
---- !u!114 &8290701939830850005
+    - _fieldName: chase
+      _node: {fileID: 4227239231421679407}
+      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: entry
+        node: {fileID: 4891963895828758980}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: entry
+      _node: {fileID: 4227239231421679407}
+      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: patrol
+        node: {fileID: -9140926354708420325}
+        reroutePoints: []
+      - fieldName: patrol
+        node: {fileID: 1460425117481906771}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  entry: {fileID: 0}
+  portConditions:
+  - portName: idle
+    condition:
+      type: 5
+      duration: 2
+      tolerance: 0.4
+      healthThreshold: 0.3
+  - portName: chase
+    condition:
+      type: 0
+      duration: 2
+      tolerance: 0.4
+      healthThreshold: 0.3
+  idle: {fileID: 0}
+  chase: {fileID: 0}
+--- !u!114 &4891963895828758980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0688bbb4b971c4cd39c2d8d85672b5cf, type: 3}
+  m_Name: ChaseStateNode
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 0, y: 0}
+  ports:
+    keys:
+    - attack
+    - investigate
+    - entry
+    values:
+    - _fieldName: attack
+      _node: {fileID: 4891963895828758980}
+      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: entry
+        node: {fileID: 5716696375431665088}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: investigate
+      _node: {fileID: 4891963895828758980}
+      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: entry
+        node: {fileID: 5971294697155525897}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: entry
+      _node: {fileID: 4891963895828758980}
+      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: chase
+        node: {fileID: -9140926354708420325}
+        reroutePoints: []
+      - fieldName: chase
+        node: {fileID: 4227239231421679407}
+        reroutePoints: []
+      - fieldName: chase
+        node: {fileID: 5716696375431665088}
+        reroutePoints: []
+      - fieldName: chase
+        node: {fileID: 5971294697155525897}
+        reroutePoints: []
+      - fieldName: chase
+        node: {fileID: 1460425117481906771}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  entry: {fileID: 0}
+  portConditions:
+  - portName: attack
+    condition:
+      type: 2
+      duration: 2
+      tolerance: 0.4
+      healthThreshold: 0.3
+  - portName: investigate
+    condition:
+      type: 1
+      duration: 2
+      tolerance: 0.4
+      healthThreshold: 0.3
+  attack: {fileID: 0}
+  investigate: {fileID: 0}
+  repathInterval: 0.15
+  stoppingDistanceTolerance: 0.1
+--- !u!114 &5229330413435850661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae08776afe8904edc94e183cb7fb347d, type: 3}
+  m_Name: EnemyEntryNode
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -600, y: 0}
+  ports:
+    keys:
+    - start
+    values:
+    - _fieldName: start
+      _node: {fileID: 5229330413435850661}
+      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: entry
+        node: {fileID: -9140926354708420325}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  start: {fileID: 0}
+--- !u!114 &5716696375431665088
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -448,7 +438,7 @@ MonoBehaviour:
   m_Name: AttackStateNode
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 248, y: -120}
+  position: {x: 300, y: -100}
   ports:
     keys:
     - chase
@@ -456,42 +446,131 @@ MonoBehaviour:
     - entry
     values:
     - _fieldName: chase
-      _node: {fileID: 8290701939830850005}
+      _node: {fileID: 5716696375431665088}
       _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       connections:
       - fieldName: entry
-        node: {fileID: -8334640975560672660}
+        node: {fileID: 4891963895828758980}
         reroutePoints: []
       _direction: 1
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: investigate
-      _node: {fileID: 8290701939830850005}
+      _node: {fileID: 5716696375431665088}
       _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       connections:
       - fieldName: entry
-        node: {fileID: -6814847032895261915}
+        node: {fileID: 5971294697155525897}
         reroutePoints: []
       _direction: 1
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
     - _fieldName: entry
-      _node: {fileID: 8290701939830850005}
+      _node: {fileID: 5716696375431665088}
       _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       connections:
       - fieldName: attack
-        node: {fileID: -8334640975560672660}
+        node: {fileID: 4891963895828758980}
         reroutePoints: []
       _direction: 0
       _connectionType: 0
       _typeConstraint: 0
       _dynamic: 0
   entry: {fileID: 0}
+  portConditions:
+  - portName: chase
+    condition:
+      type: 3
+      duration: 2
+      tolerance: 0.4
+      healthThreshold: 0.3
+  - portName: investigate
+    condition:
+      type: 1
+      duration: 2
+      tolerance: 0.4
+      healthThreshold: 0.3
   chase: {fileID: 0}
   investigate: {fileID: 0}
   exitRangeTolerance: 0.4
+--- !u!114 &5971294697155525897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a966cd3dd3e34cb591a4a70cc4365e7, type: 3}
+  m_Name: InvestigateStateNode
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 300, y: 100}
+  ports:
+    keys:
+    - chase
+    - returnNode
+    - entry
+    values:
+    - _fieldName: chase
+      _node: {fileID: 5971294697155525897}
+      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: entry
+        node: {fileID: 4891963895828758980}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: returnNode
+      _node: {fileID: 5971294697155525897}
+      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: entry
+        node: {fileID: 1460425117481906771}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: entry
+      _node: {fileID: 5971294697155525897}
+      _typeQualifiedName: FMBG.AI.EnemyStateNode, Game.Runtime, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: investigate
+        node: {fileID: 4891963895828758980}
+        reroutePoints: []
+      - fieldName: investigate
+        node: {fileID: 5716696375431665088}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  entry: {fileID: 0}
+  portConditions:
+  - portName: chase
+    condition:
+      type: 0
+      duration: 2
+      tolerance: 0.4
+      healthThreshold: 0.3
+  - portName: returnNode
+    condition:
+      type: 4
+      duration: 3
+      tolerance: 0.4
+      healthThreshold: 0.3
+  chase: {fileID: 0}
+  returnNode: {fileID: 0}
+  investigateDuration: 3

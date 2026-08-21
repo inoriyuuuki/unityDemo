@@ -31,6 +31,7 @@ ScriptableObject ──► 敌人/武器/技能静态配置（只读模板）
 
 - `EnemyStateGraph`（xNode 节点图）+ `EnemyStateMachineRunner`（运行时）
 - 状态节点只保存配置，运行时数据放 `EnemyBlackboard`（多敌人可共享一张图）
+- **切换条件可视化配置**：每个输出端口可配置 `TransitionCondition`（目标可见/丢失、进入/超出攻击范围、计时器、到达目的地、生命阈值、总是），在节点 Inspector 的 `Port Conditions` 中编辑，无需改代码；支持按顺序评估，首个满足的条件触发切换
 - 感知：距离 + 视野角 + 遮挡检测 + 警觉值
 - 移动：NavMeshAgent 封装（`EnemyMotor`）
 - 图校验器：`Game > AI > Validate Enemy State Graph`

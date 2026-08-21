@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9096651ca8b124f3082a451ace4d3e19, type: 3}
+  m_Name: Weapon_Sword
+  m_EditorClassIdentifier: 
+  weaponId: 
+  displayName: 
+  weaponPrefab: {fileID: 614246700550641394, guid: ce15c3ce9ef664c3181fe70a2a0ea02a, type: 3}
+  damage: 10
+  knockbackForce: 0
+  windupDuration: 0.2
+  activeDuration: 0.1
+  recoveryDuration: 0.4
+  canMoveWhileAttacking: 1
+  attackMoveSpeedMultiplier: 0.5
+  targetLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  attackRange: 1.8
+  preferredAttackRange: 1.4
+  hitboxOffset: {x: 0, y: 0.8, z: 1}
+  hitboxSize: {x: 1.2, y: 1.5, z: 1.8}
+  detectDuringEntireActivePhase: 1
+  canHitMultipleTargets: 1
+  swingEffectPrefab: {fileID: 0}
+  swingSound: {fileID: 0}
+  hitSound: {fileID: 0}

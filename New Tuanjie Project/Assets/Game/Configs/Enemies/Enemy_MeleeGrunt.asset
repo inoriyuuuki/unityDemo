@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a81752412527d4446845b74571b84326, type: 3}
+  m_Name: Enemy_MeleeGrunt
+  m_EditorClassIdentifier: 
+  enemyId: melee_grunt
+  displayName: "\u8FD1\u6218\u6742\u5175"
+  stateGraph: {fileID: 11400000, guid: 5db08a5c7a1584c3a8075af80d5dfa12, type: 2}
+  vitals:
+    maxHealth: 80
+    hitStunDuration: 0
+    deathDestroyDelay: 2
+  movement:
+    patrolSpeed: 2
+    chaseSpeed: 4.5
+    acceleration: 12
+    angularSpeed: 360
+    stoppingDistanceTolerance: 0.2
+  perception:
+    viewDistance: 10
+    viewAngle: 100
+    scanInterval: 0.1
+    alertDuration: 0.6
+    forgetDuration: 3
+    targetLayers:
+      serializedVersion: 2
+      m_Bits: 512
+    obstacleLayers:
+      serializedVersion: 2
+      m_Bits: 256
+  behaviour:
+    minIdleDuration: 1
+    maxIdleDuration: 3
+    repathInterval: 0.15
+    attackExitRangeTolerance: 0.4
+    investigateDuration: 3
+    investigateTurnSpeed: 180
+    returnStoppingDistance: 0.2
+  combat:
+    startingWeapon: {fileID: 11400000, guid: 335f613c71fb34a85b00bf45804a3c29, type: 2}
+    aimTurnSpeed: 360
+    reactionDuration: 0.3
+    requireLineOfSightToAttack: 0

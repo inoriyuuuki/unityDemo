@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a81752412527d4446845b74571b84326, type: 3}
+  m_Name: Enemy_RangedGuard
+  m_EditorClassIdentifier: 
+  enemyId: ranged_guard
+  displayName: "\u8FDC\u7A0B\u5B88\u536B"
+  stateGraph: {fileID: 11400000, guid: 5db08a5c7a1584c3a8075af80d5dfa12, type: 2}
+  vitals:
+    maxHealth: 60
+    hitStunDuration: 0
+    deathDestroyDelay: 2
+  movement:
+    patrolSpeed: 1.8
+    chaseSpeed: 3.5
+    acceleration: 10
+    angularSpeed: 360
+    stoppingDistanceTolerance: 0.2
+  perception:
+    viewDistance: 14
+    viewAngle: 120
+    scanInterval: 0.1
+    alertDuration: 1.2
+    forgetDuration: 3
+    targetLayers:
+      serializedVersion: 2
+      m_Bits: 512
+    obstacleLayers:
+      serializedVersion: 2
+      m_Bits: 256
+  behaviour:
+    minIdleDuration: 1
+    maxIdleDuration: 3
+    repathInterval: 0.15
+    attackExitRangeTolerance: 0.4
+    investigateDuration: 3
+    investigateTurnSpeed: 180
+    returnStoppingDistance: 0.2
+  combat:
+    startingWeapon: {fileID: 11400000, guid: 10fc962d8a38542afae21c4a47643dbb, type: 2}
+    aimTurnSpeed: 360
+    reactionDuration: 0.5
+    requireLineOfSightToAttack: 0

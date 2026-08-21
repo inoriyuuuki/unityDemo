@@ -24,6 +24,7 @@ namespace FMBG.EditorTools
             CreatePistol();
             CreateStateGraph();
             CreateMeleeGrunt();
+            CreateRangedGuard();
             CreateSwordSlashSkill();
             CreatePistolShotSkill();
             WireSwordSkills();
@@ -247,6 +248,32 @@ namespace FMBG.EditorTools
                 LayerMask.GetMask("Player"), LayerMask.GetMask("Obstacle"));
             asset.SetBehaviour(1f, 3f, 0.15f, 0.4f, 3f, 180f, 0.2f);
             asset.SetCombat(weapon, 360f, 0.3f, false);
+            EditorUtility.SetDirty(asset);
+            return asset;
+        }
+
+        private static EnemyConfig CreateRangedGuard()
+        {
+            var graph = AssetDatabase.LoadAssetAtPath<EnemyStateGraph>(
+                "Assets/Game/Configs/Graphs/Enemy_DefaultGraph.asset");
+            var weapon = AssetDatabase.LoadAssetAtPath<RangedWeaponConfig>(
+                "Assets/Game/Configs/Weapons/Weapon_Pistol.asset");
+
+            var asset = LoadOrCreate<EnemyConfig>("Assets/Game/Configs/Enemies/Enemy_RangedGuard.asset");
+            if (asset == null)
+            {
+                return null;
+            }
+
+            asset.name = "Enemy_RangedGuard";
+            asset.SetIdentity("ranged_guard", "远程守卫");
+            asset.SetStateGraph(graph);
+            asset.SetVitals(60f, 0f, 2f);
+            asset.SetMovement(1.8f, 3.5f, 10f, 360f, 0.2f);
+            asset.SetPerception(14f, 120f, 0.1f, 1.2f, 3f,
+                LayerMask.GetMask("Player"), LayerMask.GetMask("Obstacle"));
+            asset.SetBehaviour(1f, 3f, 0.15f, 0.4f, 3f, 180f, 0.2f);
+            asset.SetCombat(weapon, 360f, 0.5f, false);
             EditorUtility.SetDirty(asset);
             return asset;
         }

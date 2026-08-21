@@ -302,8 +302,12 @@ namespace FMBG.EditorTools
             // 创建 Slate 时间轴 prefab（先添加 clip，再保存）
             var timeline = CreateSkillTimeline(
                 "Assets/Game/Prefabs/Skill_SwordSlash.prefab",
-                (casterGroup, gameplayTrack, effectTrack) =>
+                (casterGroup, animationTrack, gameplayTrack, effectTrack) =>
                 {
+                    // Animation Track: 攻击动画 (0.00 - 0.40)
+                    var anim = animationTrack.AddAction<FMBG.SlateClips.AttackAnimationClip>(0.0f);
+                    SetProperty(anim, "length", 0.4f);
+
                     // Gameplay Track: 伤害窗口 (0.08 - 0.18)
                     var hitWindow = gameplayTrack.AddAction<MeleeHitWindowClip>(0.08f);
                     SetField(hitWindow, "hitboxOffset", new Vector3(0f, 0.8f, 1f));
@@ -347,8 +351,11 @@ namespace FMBG.EditorTools
 
             var timeline = CreateSkillTimeline(
                 "Assets/Game/Prefabs/Skill_PistolShot.prefab",
-                (casterGroup, gameplayTrack, effectTrack) =>
+                (casterGroup, animationTrack, gameplayTrack, effectTrack) =>
                 {
+                    // Animation Track: 攻击动画（后坐力）
+                    var anim = animationTrack.AddAction<FMBG.SlateClips.AttackAnimationClip>(0.0f);
+                    SetProperty(anim, "length", 0.25f);
                     // Gameplay Track: 生成弹丸 (0.05)
                     var spawn = gameplayTrack.AddAction<SpawnProjectileClip>(0.05f);
                     SetField(spawn, "projectilePrefab",
@@ -390,7 +397,7 @@ namespace FMBG.EditorTools
 
         private static Cutscene CreateSkillTimeline(
             string prefabPath,
-            System.Action<ActorGroup, ActorActionTrack, ActorActionTrack> configure)
+            System.Action<ActorGroup, ActorActionTrack, ActorActionTrack, ActorActionTrack> configure)
         {
             var go = new GameObject("SkillTimeline");
             var cutscene = go.AddComponent<Cutscene>();
@@ -398,11 +405,12 @@ namespace FMBG.EditorTools
             var casterGroup = cutscene.AddGroup<ActorGroup>();
             casterGroup.name = "Caster";
 
+            var animationTrack = casterGroup.AddTrack<ActorActionTrack>("Animation");
             var gameplayTrack = casterGroup.AddTrack<ActorActionTrack>("Gameplay");
             var effectTrack = casterGroup.AddTrack<ActorActionTrack>("Effect");
 
             // 保存前先配置 clip（此时对象尚未销毁）
-            configure?.Invoke(casterGroup, gameplayTrack, effectTrack);
+            configure?.Invoke(casterGroup, animationTrack, gameplayTrack, effectTrack);
 
             var prefab = PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
             Object.DestroyImmediate(go);

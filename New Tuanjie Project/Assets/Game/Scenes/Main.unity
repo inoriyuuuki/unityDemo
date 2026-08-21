@@ -6916,7 +6916,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 300862403}
-  offset: {x: 0, y: 20, z: -10}
+  offset: {x: 0, y: 10, z: -5}
   smoothTime: 0.25
   lookAngle: 60
   mouseOffsetStrength: 0

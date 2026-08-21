@@ -379,6 +379,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 570465171732500032}
   - {fileID: 4792958380246126237}
   - {fileID: 5295031724947180654}
   m_Father: {fileID: 1208443191313216501}
@@ -398,6 +399,7 @@ MonoBehaviour:
   _tracks:
   - {fileID: 1118377935604704683}
   - {fileID: 338001257892480328}
+  - {fileID: 6958473133142714754}
   _sections: []
   _isCollapsed: 0
   _active: 1
@@ -504,6 +506,78 @@ Transform:
   - {fileID: 2104227201866073216}
   m_Father: {fileID: 2908400755906149546}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7386878413137694754
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 7
+  m_Component:
+  - component: {fileID: 570465171732500032}
+  - component: {fileID: 6958473133142714754}
+  - component: {fileID: 2464188450292379486}
+  m_Layer: 0
+  m_HasEditorInfo: 1
+  m_Name: Animation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &570465171732500032
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7386878413137694754}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2104227201866073216}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6958473133142714754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7386878413137694754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b9cb7b110ccf394a9e8eef8d8047e62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _name: Animation
+  _color: {r: 1, g: 1, b: 1, a: 1}
+  _active: 1
+  _isLocked: 0
+  _actionClips:
+  - {fileID: 2464188450292379486}
+  _customHeight: 300
+  _icon: {fileID: 0}
+--- !u!114 &2464188450292379486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7386878413137694754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6e94aab0c8244983bca6fb39f297b49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _startTime: 0
+  _animationData:
+    _animatedParameters: []
+  _length: 0.4
+  _blendIn: 0
+  _blendOut: 0
 --- !u!1 &8382780649492622179
 GameObject:
   m_ObjectHideFlags: 0

@@ -34,15 +34,25 @@ namespace FMBG.Visual
         private Vector3 lastPosition;
         private float moveAmount;
 
+        // 技能攻击动画（由 Slate AttackAnimationClip 触发）
+        private float attackAnimTimer = -1f;
+        private float attackAnimDuration = 0.4f;
+        private Vector3 armBaseRotation;   // 记录手臂初始旋转，动画结束恢复
+
         private void Awake()
         {
             lastPosition = transform.position;
+            if (armR != null)
+            {
+                armBaseRotation = armR.localEulerAngles;
+            }
         }
 
         private void Update()
         {
             UpdateMovementSwing();
             UpdateAttackSwing();
+            UpdateSkillAttackAnimation();
         }
 
         private void UpdateMovementSwing()
@@ -99,6 +109,70 @@ namespace FMBG.Visual
             else
             {
                 weaponPivot.localRotation = Quaternion.identity;
+            }
+        }
+
+        /// <summary>
+        /// 播放一次攻击动画（由 Slate 技能时间轴 AttackAnimationClip 触发）：
+        /// 右臂（持武器）抬起→前挥→收回，身体轻微前倾，武器同步挥砍。
+        /// </summary>
+        public void PlayAttackAnimation(float duration)
+        {
+            attackAnimDuration = Mathf.Max(0.1f, duration);
+            attackAnimTimer = 0f;
+        }
+
+        private void UpdateSkillAttackAnimation()
+        {
+            if (attackAnimTimer < 0f)
+            {
+                return;
+            }
+
+            attackAnimTimer += Time.deltaTime;
+            float t = Mathf.Clamp01(attackAnimTimer / attackAnimDuration);
+            if (t >= 1f)
+            {
+                attackAnimTimer = -1f;
+                // 恢复初始姿态
+                if (body != null) body.localRotation = Quaternion.identity;
+                if (armR != null) armR.localRotation = Quaternion.Euler(armBaseRotation);
+                if (weaponPivot != null) weaponPivot.localRotation = Quaternion.identity;
+                return;
+            }
+
+            // 手臂动画：抬起(0-0.3) → 前挥(0.3-0.7) → 收回(0.7-1)
+            float armPitch;
+            if (t < 0.3f)
+            {
+                armPitch = Mathf.Lerp(0f, -120f, t / 0.3f);       // 抬起
+            }
+            else if (t < 0.7f)
+            {
+                armPitch = Mathf.Lerp(-120f, 30f, (t - 0.3f) / 0.4f); // 前挥
+            }
+            else
+            {
+                armPitch = Mathf.Lerp(30f, 0f, (t - 0.7f) / 0.3f);   // 收回
+            }
+
+            if (armR != null)
+            {
+                armR.localRotation = Quaternion.Euler(armPitch, 0f, 0f);
+            }
+
+            // 身体前倾（前挥阶段）
+            if (body != null)
+            {
+                float lean = t >= 0.3f && t < 0.7f ? -15f * (1f - Mathf.Abs(t - 0.5f) * 2f) : 0f;
+                body.localRotation = Quaternion.Euler(lean, 0f, 0f);
+            }
+
+            // 武器同步挥砍
+            if (weaponPivot != null)
+            {
+                float swingAngle = Mathf.Lerp(-70f, 70f, Mathf.Clamp01((t - 0.3f) / 0.4f));
+                weaponPivot.localRotation = Quaternion.Euler(-20f * (1f - Mathf.Abs(t - 0.5f) * 2f), swingAngle, 0f);
             }
         }
 

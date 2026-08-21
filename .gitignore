@@ -60,3 +60,7 @@
 .env
 .env.*
 !.env.example
+
+# Third-party: Slate (ParadoxNotion) — 不提交第三方插件
+/New Tuanjie Project/Assets/Script/ParadoxNotion/SLATE Cinematic Sequencer/
+/New Tuanjie Project/Assets/Script/ParadoxNotion/SLATE Cinematic Sequencer.meta

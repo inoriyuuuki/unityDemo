@@ -2295,6 +2295,7 @@ GameObject:
   - component: {fileID: 1994925160}
   - component: {fileID: 1994925163}
   - component: {fileID: 1994925165}
+  - component: {fileID: 1994925166}
   m_Layer: 10
   m_HasEditorInfo: 1
   m_Name: Enemy_MeleeGrunt
@@ -2563,11 +2564,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actor: {fileID: 0}
   perception: {fileID: 0}
-  motor: {fileID: 0}
   viewDistanceColor: {r: 0, g: 0.8, b: 1, a: 0.3}
   seeTargetColor: {r: 0, g: 1, b: 0, a: 1}
   blockedColor: {r: 1, g: 0, b: 0, a: 1}
   lastKnownColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  alertFillColor: {r: 1, g: 0.5, b: 0, a: 0.08}
 --- !u!95 &1994925165
 Animator:
   serializedVersion: 6
@@ -2591,6 +2592,26 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1994925166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1994925148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5272af9f24e343599cb3c26b2dfca2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actor: {fileID: 0}
+  circleColor: {r: 0, g: 0.8, b: 1, a: 0.6}
+  circleWidth: 0.08
+  coneColor: {r: 1, g: 0.55, b: 0, a: 0.22}
+  coneSegments: 24
+  lineVisible: {r: 0, g: 1, b: 0, a: 0.8}
+  lineBlocked: {r: 1, g: 0, b: 0, a: 0.8}
+  lineWidth: 0.06
 --- !u!1 &2096179427
 GameObject:
   m_ObjectHideFlags: 0

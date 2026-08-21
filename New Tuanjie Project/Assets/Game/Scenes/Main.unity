@@ -636,7 +636,7 @@ Transform:
   m_GameObject: {fileID: 300862402}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 3}
+  m_LocalPosition: {x: 0, y: 1, z: 3.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1442,8 +1442,8 @@ Transform:
   m_GameObject: {fileID: 752280190}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2, y: 1, z: 1.5}
-  m_LocalScale: {x: 4, y: 2, z: 0.5}
+  m_LocalPosition: {x: 2.5, y: 1, z: 2}
+  m_LocalScale: {x: 0.5, y: 2, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -3108,6 +3108,59 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
+--- !u!1 &1726111717
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 7
+  m_Component:
+  - component: {fileID: 1726111719}
+  - component: {fileID: 1726111718}
+  m_Layer: 0
+  m_HasEditorInfo: 1
+  m_Name: HealthBarHUD
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1726111718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1726111717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6412792018e04b7298f82a919addbe4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerHealth: {fileID: 300862407}
+  enemyHealths:
+  - {fileID: 1994925155}
+  barWidth: 220
+  barHeight: 18
+  playerBarColor: {r: 0.2, g: 0.8, b: 0.3, a: 1}
+  enemyBarColor: {r: 0.9, g: 0.3, b: 0.3, a: 1}
+  bgColor: {r: 0, g: 0, b: 0, a: 0.6}
+--- !u!4 &1726111719
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1726111717}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1888114032
 GameObject:
   m_ObjectHideFlags: 0
@@ -3967,3 +4020,4 @@ SceneRoots:
   - {fileID: 1132858088}
   - {fileID: 486420446}
   - {fileID: 1066079562}
+  - {fileID: 1726111719}

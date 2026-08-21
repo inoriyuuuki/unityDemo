@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ChaseStateNode
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 0, y: 0}
+  position: {x: -72, y: 40}
   ports:
     keys:
     - attack
@@ -86,7 +86,7 @@ MonoBehaviour:
   m_Name: PatrolStateNode
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -300, y: 100}
+  position: {x: -8, y: -248}
   ports:
     keys:
     - idle
@@ -179,7 +179,7 @@ MonoBehaviour:
   m_Name: IdleStateNode
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -300, y: -100}
+  position: {x: -344, y: -136}
   ports:
     keys:
     - patrol
@@ -242,7 +242,7 @@ MonoBehaviour:
   m_Name: InvestigateStateNode
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 300, y: 100}
+  position: {x: 216, y: 120}
   ports:
     keys:
     - chase
@@ -305,7 +305,7 @@ MonoBehaviour:
   m_Name: EnemyEntryNode
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -600, y: 0}
+  position: {x: -568, y: -216}
   ports:
     keys:
     - start
@@ -448,7 +448,7 @@ MonoBehaviour:
   m_Name: AttackStateNode
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 300, y: -100}
+  position: {x: 248, y: -120}
   ports:
     keys:
     - chase

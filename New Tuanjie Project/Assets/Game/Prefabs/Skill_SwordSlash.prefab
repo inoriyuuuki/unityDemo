@@ -126,7 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d03c26f092c04bd9986138cab54f102, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startTime: 0.18
+  _startTime: 0.06
   _animationData:
     _animatedParameters: []
   effectPrefab: {fileID: 0}
@@ -147,7 +147,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 058a5a462c81a47b1968e0f46003977f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startTime: 0.18
+  _startTime: 0.06
   _animationData:
     _animatedParameters: []
   audioClip: {fileID: 0}
@@ -336,10 +336,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d1b4dfef2b444ffbaee119929360bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startTime: 0.2
+  _startTime: 0.08
   _animationData:
     _animatedParameters: []
-  _length: 0.15
+  _length: 0.1
   _blendIn: 0
   _blendOut: 0
   hitboxOffset: {x: 0, y: 0.8, z: 1}

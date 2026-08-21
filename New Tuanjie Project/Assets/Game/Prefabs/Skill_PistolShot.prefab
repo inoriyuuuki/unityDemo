@@ -332,7 +332,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 058a5a462c81a47b1968e0f46003977f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startTime: 0.12
+  _startTime: 0.05
   _animationData:
     _animatedParameters: []
   audioClip: {fileID: 0}
@@ -465,7 +465,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abcbbc15c6df54e1c9894266f68d252a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startTime: 0.12
+  _startTime: 0.05
   _animationData:
     _animatedParameters: []
   projectilePrefab: {fileID: 8279173669593545121, guid: 8b1a151ce74b2490586b0b52143b2ed8, type: 3}

@@ -58,6 +58,7 @@ namespace FMBG.AI
             }
 
             initialized = true;
+            enabled = true; // 确保组件启用（场景可能保存为禁用状态）
             ChangeState(entryNode.GetStartState());
         }
 

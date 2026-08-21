@@ -83,16 +83,19 @@ namespace FMBG.AI
 
         public void Stop()
         {
-            if (agent != null)
+            if (agent != null && agent.isOnNavMesh)
             {
                 agent.isStopped = true;
-                agent.ResetPath();
+                if (agent.hasPath)
+                {
+                    agent.ResetPath();
+                }
             }
         }
 
         public void Resume()
         {
-            if (agent != null)
+            if (agent != null && agent.isOnNavMesh)
             {
                 agent.isStopped = false;
             }
@@ -100,8 +103,25 @@ namespace FMBG.AI
 
         public bool ReachedDestination()
         {
-            return agent != null &&
-                   (!agent.hasPath || agent.remainingDistance <= agent.stoppingDistance + 0.05f);
+            if (agent == null || !agent.enabled || !agent.isOnNavMesh)
+            {
+                return false;
+            }
+
+            // 路径仍在计算中：尚未到达
+            if (agent.pathPending)
+            {
+                return false;
+            }
+
+            // 从未设置路径（或路径被清空）且距离目标仍很远：尚未开始移动
+            if (!agent.hasPath &&
+                Vector3.Distance(transform.position, agent.destination) > agent.stoppingDistance + 0.1f)
+            {
+                return false;
+            }
+
+            return agent.remainingDistance <= agent.stoppingDistance + 0.05f;
         }
     }
 }

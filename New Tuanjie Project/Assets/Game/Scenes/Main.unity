@@ -492,7 +492,7 @@ Transform:
   m_GameObject: {fileID: 300862402}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 3.5}
+  m_LocalPosition: {x: 5.52, y: 1, z: 3.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -512,6 +512,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   combat: {fileID: 300862406}
+  health: {fileID: 0}
   mainCamera: {fileID: 0}
   groundLayer:
     serializedVersion: 2
@@ -575,6 +576,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   maxRayDistance: 100
+  health: {fileID: 0}
 --- !u!143 &300862409
 CharacterController:
   m_ObjectHideFlags: 0
@@ -2157,6 +2159,7 @@ MonoBehaviour:
   enemyBarColor: {r: 0.9, g: 0.3, b: 0.3, a: 1}
   bgColor: {r: 0, g: 0, b: 0, a: 0.6}
   alertColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  stateColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &1726111719
 Transform:
   m_ObjectHideFlags: 0
@@ -2291,6 +2294,7 @@ GameObject:
   - component: {fileID: 1994925161}
   - component: {fileID: 1994925160}
   - component: {fileID: 1994925163}
+  - component: {fileID: 1994925165}
   m_Layer: 10
   m_HasEditorInfo: 1
   m_Name: Enemy_MeleeGrunt
@@ -2331,7 +2335,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1994925148}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bc4c439fb6234474c9cb3cddb91cbb70, type: 3}
   m_Name: 
@@ -2564,6 +2568,29 @@ MonoBehaviour:
   seeTargetColor: {r: 0, g: 1, b: 0, a: 1}
   blockedColor: {r: 1, g: 0, b: 0, a: 1}
   lastKnownColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+--- !u!95 &1994925165
+Animator:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1994925148}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 07f1b3f445a3646f39c8105dcbc3067f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_UpdateFrequencyMode: 0
+  m_UpdateFrequency: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2096179427
 GameObject:
   m_ObjectHideFlags: 0

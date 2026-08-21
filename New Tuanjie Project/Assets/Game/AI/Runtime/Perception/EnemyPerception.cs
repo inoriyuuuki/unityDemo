@@ -105,6 +105,14 @@ namespace FMBG.AI
                     Target = found;
                     LastKnownPosition = found.position;
                 }
+
+                // 警戒值归零：立即丢失目标（不再继续追击）
+                if (alertValue <= 0f)
+                {
+                    canSeeTarget = false;
+                    Target = null;
+                    TargetLost?.Invoke();
+                }
                 else if (Time.time - lastSeenTime > settings.forgetDuration)
                 {
                     canSeeTarget = false;

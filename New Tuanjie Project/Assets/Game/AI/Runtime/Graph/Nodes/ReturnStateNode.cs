@@ -6,8 +6,8 @@ namespace FMBG.AI
     [CreateNodeMenu("Enemy AI/States/Return")]
     public sealed class ReturnStateNode : EnemyStateNode
     {
-        [Output] public EnemyStateNode patrol;
-        [Output] public EnemyStateNode chase;
+        [Output] public TransitionConditionNode patrol;
+        [Output] public TransitionConditionNode chase;
 
         public override void Enter(EnemyContext context)
         {

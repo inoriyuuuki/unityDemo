@@ -9,13 +9,6 @@ namespace FMBG.AI
     {
         [Input] public EnemyStateNode entry;
 
-        [Header("Transition Conditions")]
-        [Tooltip("输出端口对应的切换条件。按顺序评估，第一个满足的条件触发切换。")]
-        [SerializeField] private List<PortCondition> portConditions = new();
-
-        /// <summary>配置的端口条件列表（Inspector 可编辑）。</summary>
-        public List<PortCondition> PortConditions => portConditions;
-
         public virtual void Enter(EnemyContext context)
         {
         }
@@ -29,27 +22,26 @@ namespace FMBG.AI
         }
 
         /// <summary>
-        /// 基于端口条件的默认切换评估：
-        /// 遍历配置的 PortCondition，第一个满足的返回其端口连接的节点。
+        /// 基于可视化条件节点的默认切换评估：
+        /// 遍历所有输出端口，找到第一个条件满足的条件节点，返回其 target 连接的状态。
         /// 子类可重写以增加全局守卫（如"技能施法中不切换"）。
         /// </summary>
         public virtual EnemyStateNode EvaluateTransition(EnemyContext context)
         {
-            if (portConditions == null)
+            foreach (NodePort port in Outputs)
             {
-                return null;
-            }
-
-            foreach (var pc in portConditions)
-            {
-                if (pc == null || string.IsNullOrEmpty(pc.PortName) || pc.Condition == null)
+                if (port == null || port.ConnectionCount == 0)
                 {
                     continue;
                 }
 
-                if (pc.Condition.Evaluate(context))
+                for (int i = 0; i < port.ConnectionCount; i++)
                 {
-                    return GetConnectedNode<EnemyStateNode>(pc.PortName);
+                    if (port.GetConnection(i).node is TransitionConditionNode conditionNode &&
+                        conditionNode.Evaluate(context))
+                    {
+                        return conditionNode.GetTargetState();
+                    }
                 }
             }
 
@@ -65,25 +57,6 @@ namespace FMBG.AI
             }
 
             return port.GetConnection(0).node as T;
-        }
-    }
-
-    /// <summary>端口与条件的绑定（可序列化）。</summary>
-    [System.Serializable]
-    public sealed class PortCondition
-    {
-        [SerializeField] private string portName;
-        [SerializeField] private TransitionCondition condition = new();
-
-        public string PortName => portName;
-        public TransitionCondition Condition => condition;
-
-        public PortCondition() { }
-
-        public PortCondition(string portName, TransitionConditionType type)
-        {
-            this.portName = portName;
-            condition = new TransitionCondition(type);
         }
     }
 }

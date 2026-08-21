@@ -6,8 +6,8 @@ namespace FMBG.AI
     [CreateNodeMenu("Enemy AI/States/Idle")]
     public sealed class IdleStateNode : EnemyStateNode
     {
-        [Output] public EnemyStateNode patrol;
-        [Output] public EnemyStateNode chase;
+        [Output] public TransitionConditionNode patrol;
+        [Output] public TransitionConditionNode chase;
 
         [Min(0f)] public float idleDuration = 2f;
 

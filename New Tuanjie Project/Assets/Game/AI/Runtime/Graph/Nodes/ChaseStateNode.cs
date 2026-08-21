@@ -6,8 +6,8 @@ namespace FMBG.AI
     [CreateNodeMenu("Enemy AI/States/Chase")]
     public sealed class ChaseStateNode : EnemyStateNode
     {
-        [Output] public EnemyStateNode attack;
-        [Output] public EnemyStateNode investigate;
+        [Output] public TransitionConditionNode attack;
+        [Output] public TransitionConditionNode investigate;
 
         [Min(0.02f)] public float repathInterval = 0.15f;
         public float stoppingDistanceTolerance = 0.1f;

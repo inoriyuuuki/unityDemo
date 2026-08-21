@@ -33,79 +33,73 @@ namespace FMBG.EditorTools
             Debug.Log("[GameAssetFactory] 演示资产创建完成。");
         }
 
-        /// <summary>为状态节点配置一个端口条件（默认设置切换阈值）。</summary>
-        private static void SetPortCondition(
-            Node node,
+        /// <summary>创建条件节点并连接：statePort -> conditionNode -> targetState。</summary>
+        private static TransitionConditionNode ConnectWithCondition(
+            EnemyStateNode fromNode,
             string portName,
-            TransitionConditionType type)
+            TransitionConditionType type,
+            EnemyStateNode target,
+            Vector2 position)
         {
-            if (node is not EnemyStateNode stateNode)
+            var conditionNode = ConnectWithCondition(fromNode, portName, 0f, type, target, position);
+            return conditionNode;
+        }
+
+        /// <summary>创建条件节点并连接（带阈值参数）。</summary>
+        private static TransitionConditionNode ConnectWithCondition(
+            EnemyStateNode fromNode,
+            string portName,
+            float threshold,
+            TransitionConditionType type,
+            EnemyStateNode target,
+            Vector2 position)
+        {
+            if (fromNode == null || target == null)
             {
-                return;
+                return null;
             }
 
-            var list = stateNode.PortConditions;
+            // 创建条件节点
+            var conditionNode = CreateNode<TransitionConditionNode>((EnemyStateGraph)fromNode.graph);
+            conditionNode.position = position;
+            conditionNode.condition = new TransitionCondition(type);
 
-            // 若该端口已有条件则替换，否则追加（避免覆盖其他端口）
-            int existing = list.FindIndex(p => p != null && p.PortName == portName);
-            PortCondition entry;
-            if (existing >= 0)
-            {
-                entry = new PortCondition(portName, type);
-                list[existing] = entry;
-            }
-            else
-            {
-                entry = new PortCondition(portName, type);
-                list.Add(entry);
-            }
-
-            // 为特定条件设置默认阈值
-            var condition = entry.Condition;
             switch (type)
             {
                 case TransitionConditionType.TimerElapsed:
-                    // Idle/Investigate 使用节点自身的时长字段
-                    if (stateNode is IdleStateNode idleNode)
-                    {
-                        condition.SetDuration(idleNode.idleDuration);
-                    }
-                    else if (stateNode is InvestigateStateNode invNode)
-                    {
-                        condition.SetDuration(invNode.investigateDuration);
-                    }
-                    else
-                    {
-                        condition.SetDuration(2f);
-                    }
+                    conditionNode.condition.SetDuration(threshold > 0f ? threshold : 2f);
                     break;
-
+                case TransitionConditionType.TargetInAttackRange:
                 case TransitionConditionType.TargetOutOfAttackRange:
-                    if (stateNode is AttackStateNode attackNode)
-                    {
-                        condition.SetTolerance(attackNode.exitRangeTolerance);
-                    }
+                    conditionNode.condition.SetTolerance(threshold);
                     break;
             }
 
-            EditorUtility.SetDirty(stateNode);
+            // 连接：状态输出端口 -> 条件节点 from 输入端口
+            fromNode.GetOutputPort(portName).Connect(conditionNode.GetInputPort("from"));
+            // 连接：条件节点 target 输出端口 -> 目标状态 entry 输入端口
+            conditionNode.GetOutputPort("target").Connect(target.GetInputPort("entry"));
+
+            EditorUtility.SetDirty(conditionNode);
+            EditorUtility.SetDirty(fromNode);
+            return conditionNode;
         }
 
-        private static Node CreateNode(EnemyStateGraph graph, System.Type type)
+        private static T CreateNode<T>(EnemyStateGraph graph) where T : Node
         {
-            Node node = graph.AddNode(type);
+            Node node = graph.AddNode(typeof(T));
             if (node == null)
             {
                 return null;
             }
 
-            node.name = type.Name;
+            node.name = typeof(T).Name;
             if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(graph)))
             {
                 AssetDatabase.AddObjectToAsset(node, graph);
             }
 
-            return node;
+            return node as T;
         }
 
         private static void EnsureFolder(string path)
@@ -177,15 +171,15 @@ namespace FMBG.EditorTools
             AssetDatabase.SaveAssets();
 
             // 创建节点（与 NodeGraphEditor.CreateNode 一致：AddNode + AddObjectToAsset）
-            var entry = CreateNode(graph, typeof(EnemyEntryNode));
-            var any = CreateNode(graph, typeof(EnemyAnyStateNode));
-            var idle = CreateNode(graph, typeof(IdleStateNode));
-            var patrol = CreateNode(graph, typeof(PatrolStateNode));
-            var chase = CreateNode(graph, typeof(ChaseStateNode));
-            var attack = CreateNode(graph, typeof(AttackStateNode));
-            var investigate = CreateNode(graph, typeof(InvestigateStateNode));
-            var returnNode = CreateNode(graph, typeof(ReturnStateNode));
-            var dead = CreateNode(graph, typeof(DeadStateNode));
+            var entry = CreateNode<EnemyEntryNode>(graph);
+            var any = CreateNode<EnemyAnyStateNode>(graph);
+            var idle = CreateNode<IdleStateNode>(graph);
+            var patrol = CreateNode<PatrolStateNode>(graph);
+            var chase = CreateNode<ChaseStateNode>(graph);
+            var attack = CreateNode<AttackStateNode>(graph);
+            var investigate = CreateNode<InvestigateStateNode>(graph);
+            var returnNode = CreateNode<ReturnStateNode>(graph);
+            var dead = CreateNode<DeadStateNode>(graph);
 
             entry.position = new Vector2(-600, 0);
             any.position = new Vector2(300, 300);
@@ -197,46 +191,34 @@ namespace FMBG.EditorTools
             returnNode.position = new Vector2(600, 150);
             dead.position = new Vector2(600, -250);
 
-            // 连接
+            // 连接：入口与全局死亡
             entry.GetOutputPort("start").Connect(idle.GetInputPort("entry"));
             any.GetOutputPort("dead").Connect(dead.GetInputPort("entry"));
 
-            idle.GetOutputPort("patrol").Connect(patrol.GetInputPort("entry"));
-            idle.GetOutputPort("chase").Connect(chase.GetInputPort("entry"));
+            // 可视化条件节点连线：状态输出端口 -> 条件节点 -> 目标状态
+            // Idle
+            ConnectWithCondition(idle, "patrol", idle.idleDuration, TransitionConditionType.TimerElapsed, patrol, new Vector2(-150, -80));
+            ConnectWithCondition(idle, "chase", TransitionConditionType.TargetVisible, chase, new Vector2(-150, -20));
 
-            patrol.GetOutputPort("idle").Connect(idle.GetInputPort("entry"));
-            patrol.GetOutputPort("chase").Connect(chase.GetInputPort("entry"));
+            // Patrol
+            ConnectWithCondition(patrol, "idle", TransitionConditionType.ReachedDestination, idle, new Vector2(-150, 140));
+            ConnectWithCondition(patrol, "chase", TransitionConditionType.TargetVisible, chase, new Vector2(-150, 200));
 
-            chase.GetOutputPort("attack").Connect(attack.GetInputPort("entry"));
-            chase.GetOutputPort("investigate").Connect(investigate.GetInputPort("entry"));
+            // Chase
+            ConnectWithCondition(chase, "attack", TransitionConditionType.TargetInAttackRange, attack, new Vector2(150, 20));
+            ConnectWithCondition(chase, "investigate", TransitionConditionType.TargetLost, investigate, new Vector2(150, 80));
 
-            attack.GetOutputPort("chase").Connect(chase.GetInputPort("entry"));
-            attack.GetOutputPort("investigate").Connect(investigate.GetInputPort("entry"));
+            // Attack
+            ConnectWithCondition(attack, "chase", attack.exitRangeTolerance, TransitionConditionType.TargetOutOfAttackRange, chase, new Vector2(450, -80));
+            ConnectWithCondition(attack, "investigate", TransitionConditionType.TargetLost, investigate, new Vector2(450, -20));
 
-            investigate.GetOutputPort("chase").Connect(chase.GetInputPort("entry"));
-            investigate.GetOutputPort("returnNode").Connect(returnNode.GetInputPort("entry"));
+            // Investigate
+            ConnectWithCondition(investigate, "chase", TransitionConditionType.TargetVisible, chase, new Vector2(450, 140));
+            ConnectWithCondition(investigate, "returnNode", investigate.investigateDuration, TransitionConditionType.TimerElapsed, returnNode, new Vector2(450, 200));
 
-            returnNode.GetOutputPort("patrol").Connect(patrol.GetInputPort("entry"));
-            returnNode.GetOutputPort("chase").Connect(chase.GetInputPort("entry"));
-
-            // 为各节点配置默认切换条件（可在 xNode Inspector 中修改）
-            SetPortCondition(idle, "patrol", TransitionConditionType.TimerElapsed);
-            SetPortCondition(idle, "chase", TransitionConditionType.TargetVisible);
-
-            SetPortCondition(patrol, "idle", TransitionConditionType.ReachedDestination);
-            SetPortCondition(patrol, "chase", TransitionConditionType.TargetVisible);
-
-            SetPortCondition(chase, "attack", TransitionConditionType.TargetInAttackRange);
-            SetPortCondition(chase, "investigate", TransitionConditionType.TargetLost);
-
-            SetPortCondition(attack, "chase", TransitionConditionType.TargetOutOfAttackRange);
-            SetPortCondition(attack, "investigate", TransitionConditionType.TargetLost);
-
-            SetPortCondition(investigate, "chase", TransitionConditionType.TargetVisible);
-            SetPortCondition(investigate, "returnNode", TransitionConditionType.TimerElapsed);
-
-            SetPortCondition(returnNode, "patrol", TransitionConditionType.ReachedDestination);
-            SetPortCondition(returnNode, "chase", TransitionConditionType.TargetVisible);
+            // Return
+            ConnectWithCondition(returnNode, "patrol", TransitionConditionType.ReachedDestination, patrol, new Vector2(750, 180));
+            ConnectWithCondition(returnNode, "chase", TransitionConditionType.TargetVisible, chase, new Vector2(750, 240));
 
             graph.name = "Enemy_DefaultGraph";
             EditorUtility.SetDirty(graph);

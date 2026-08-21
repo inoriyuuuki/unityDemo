@@ -6,8 +6,8 @@ namespace FMBG.AI
     [CreateNodeMenu("Enemy AI/States/Investigate")]
     public sealed class InvestigateStateNode : EnemyStateNode
     {
-        [Output] public EnemyStateNode chase;
-        [Output] public EnemyStateNode returnNode;
+        [Output] public TransitionConditionNode chase;
+        [Output] public TransitionConditionNode returnNode;
 
         [Min(0f)] public float investigateDuration = 3f;
 

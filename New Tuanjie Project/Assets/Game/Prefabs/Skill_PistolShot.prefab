@@ -387,7 +387,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _name: 
   _color: {r: 1, g: 1, b: 1, a: 1}
-  _active: 1
+  _active: 0
   _isLocked: 0
   _actionClips: []
   _customHeight: 300

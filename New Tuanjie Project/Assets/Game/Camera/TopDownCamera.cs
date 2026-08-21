@@ -7,9 +7,9 @@ namespace FMBG.Cameras
     {
         [SerializeField] private Transform target;
         [SerializeField] private Vector3 offset = new(0f, 12f, -6f);
-        [SerializeField] private float smoothTime = 0.25f;
-        [SerializeField] private float lookAngle = 50f;
-        [SerializeField] private float mouseOffsetStrength = 0.25f;
+        [SerializeField] private float smoothTime = 0.1f;
+        [SerializeField] private float lookAngle = 80f;
+        [SerializeField] private float mouseOffsetStrength = 0f;
 
         private Vector3 velocity;
 

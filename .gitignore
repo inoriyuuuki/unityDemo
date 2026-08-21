@@ -1,0 +1,62 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Unity / Tuanjie generated directories
+/New Tuanjie Project/[Ll]ibrary/
+/New Tuanjie Project/[Tt]emp/
+/New Tuanjie Project/[Oo]bj/
+/New Tuanjie Project/[Bb]uild/
+/New Tuanjie Project/[Bb]uilds/
+/New Tuanjie Project/[Ll]ogs/
+/New Tuanjie Project/[Uu]serSettings/
+/New Tuanjie Project/[Mm]emoryCaptures/
+/New Tuanjie Project/[Rr]ecordings/
+
+# Unity generated files
+/New Tuanjie Project/sysinfo.txt
+/New Tuanjie Project/*.csproj
+/New Tuanjie Project/*.sln
+/New Tuanjie Project/*.suo
+/New Tuanjie Project/*.tmp
+/New Tuanjie Project/*.user
+/New Tuanjie Project/*.userprefs
+/New Tuanjie Project/*.pidb
+/New Tuanjie Project/*.booproj
+/New Tuanjie Project/*.svd
+/New Tuanjie Project/*.pdb
+/New Tuanjie Project/*.mdb
+/New Tuanjie Project/*.opendb
+/New Tuanjie Project/*.VC.db
+/New Tuanjie Project/*.unityproj
+
+# Unity crash and profiling artifacts
+/New Tuanjie Project/crashlytics-build.properties
+/New Tuanjie Project/[Ee]xported[Oo]bj/
+/New Tuanjie Project/.consulo/
+/New Tuanjie Project/.utmp/
+
+# IDEs and editors
+.vs/
+.vscode/
+.idea/
+*.sln.iml
+
+# Builds and packages
+*.apk
+*.aab
+*.app
+*.ipa
+*.unitypackage
+
+# Local MCP/client configuration and caches
+.mcp.json
+**/.mcp.json
+.unity-mcp/
+**/.unity-mcp/
+
+# Local environment files
+.env
+.env.*
+!.env.example

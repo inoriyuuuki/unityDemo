@@ -15,6 +15,12 @@ namespace FMBG.Combat
         [field: SerializeField]
         public Faction Faction { get; private set; }
 
+        /// <summary>运行时/测试设置阵营。</summary>
+        public void SetFaction(Faction faction)
+        {
+            Faction = faction;
+        }
+
         public bool CanDamage(FactionMember other)
         {
             if (other == null)

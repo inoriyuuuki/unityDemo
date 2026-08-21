@@ -32,7 +32,11 @@ namespace FMBG.AI
 
         private void Awake()
         {
-            Initialize(config);
+            // 场景序列化已有配置才自动初始化；运行时 AddComponent 的（如测试）由调用方显式 Initialize
+            if (config != null)
+            {
+                Initialize(config);
+            }
         }
 
         public void Initialize(EnemyConfig enemyConfig)
@@ -61,7 +65,7 @@ namespace FMBG.AI
                 perception.Initialize(config.Perception);
             }
 
-            if (combat != null)
+            if (combat != null && config.Combat.startingWeapon != null)
             {
                 combat.Equip(config.Combat.startingWeapon);
             }

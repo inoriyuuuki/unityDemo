@@ -2,7 +2,8 @@
     "name": "Game.Tests.EditMode",
     "references": [
         "Game.Runtime",
-        "XNode"
+        "XNode",
+        "Game.Editor"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

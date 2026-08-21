@@ -1,103 +1,48 @@
-using FMBG.Combat;
 using UnityEngine;
 
 namespace FMBG.AI
 {
-    /// <summary>AI 调试可视化：头顶状态文字 + 感知半径/视野扇形 Gizmos + 目标线 + F1 开关。</summary>
+    /// <summary>AI 警戒范围可视化：感知半径 + 视野扇形 + 目标线 + 最后发现位置（Scene 视图始终显示）。</summary>
     public sealed class EnemyDebugView : MonoBehaviour
     {
         [Header("References")]
         [SerializeField] private EnemyActor actor;
         [SerializeField] private EnemyPerception perception;
-        [SerializeField] private EnemyMotor motor;
 
         [Header("Visuals")]
-        public Color viewDistanceColor = new(0f, 0.8f, 1f, 0.3f);
+        public Color viewDistanceColor = new(0f, 0.8f, 1f, 0.35f);
         public Color seeTargetColor = Color.green;
         public Color blockedColor = Color.red;
         public Color lastKnownColor = Color.yellow;
-
-        public static bool DebugEnabled { get; set; } = true;
-
-        private GUIStyle labelStyle;
-        private bool initialized;
+        public Color alertFillColor = new(1f, 0.5f, 0f, 0.08f);
 
         private void Awake()
         {
             if (actor == null) actor = GetComponent<EnemyActor>();
             if (perception == null) perception = GetComponent<EnemyPerception>();
-            if (motor == null) motor = GetComponent<EnemyMotor>();
-        }
-
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.F1))
-            {
-                DebugEnabled = !DebugEnabled;
-            }
-        }
-
-        private void OnGUI()
-        {
-            if (!DebugEnabled || actor == null)
-            {
-                return;
-            }
-
-            if (labelStyle == null)
-            {
-                labelStyle = new GUIStyle(GUI.skin.label)
-                {
-                    fontSize = 12,
-                    fontStyle = FontStyle.Bold
-                };
-            }
-
-            var state = actor.StateMachine != null && actor.StateMachine.CurrentState != null
-                ? actor.StateMachine.CurrentState.GetType().Name.Replace("StateNode", "")
-                : "None";
-
-            Vector3 screenPos = Camera.main != null
-                ? Camera.main.WorldToScreenPoint(transform.position + Vector3.up * 2.5f)
-                : Vector3.zero;
-
-            if (screenPos.z > 0)
-            {
-                string text = $"[{state}]";
-                Vector2 size = labelStyle.CalcSize(new GUIContent(text));
-                GUI.Label(
-                    new Rect(screenPos.x - size.x * 0.5f, Screen.height - screenPos.y, size.x, size.y),
-                    text,
-                    labelStyle);
-            }
         }
 
         private void OnDrawGizmosSelected()
         {
-            if (!DebugEnabled || perception == null)
+            if (actor == null || actor.Config == null || perception == null)
             {
                 return;
             }
 
-            // 感知半径
+            float viewDistance = actor.Config.Perception.viewDistance;
+            float viewAngle = actor.Config.Perception.viewAngle;
+            Vector3 origin = transform.position + Vector3.up * 0.2f;
+
+            // 警戒范围（感知半径）
             Gizmos.color = viewDistanceColor;
-            Gizmos.DrawWireSphere(transform.position, GetViewDistance());
+            Gizmos.DrawWireSphere(origin, viewDistance);
 
-            // 视野扇形（简化为两条边线）
-            float viewDistance = GetViewDistance();
-            float viewAngle = GetViewAngle();
-            Vector3 forward = transform.forward;
-            Vector3 left = Quaternion.Euler(0f, -viewAngle * 0.5f, 0f) * forward;
-            Vector3 right = Quaternion.Euler(0f, viewAngle * 0.5f, 0f) * forward;
-
-            Gizmos.color = seeTargetColor;
-            Gizmos.DrawRay(transform.position, left * viewDistance);
-            Gizmos.DrawRay(transform.position, right * viewDistance);
+            // 视野扇形（网格扇形）
+            DrawVisionCone(origin, viewDistance, viewAngle);
 
             // 目标线
             if (perception.Target != null)
             {
-                Vector3 origin = transform.position + Vector3.up * 0.5f;
                 Vector3 dest = perception.Target.position + Vector3.up * 0.5f;
                 Gizmos.color = perception.CanSeeTarget ? seeTargetColor : blockedColor;
                 Gizmos.DrawLine(origin, dest);
@@ -106,27 +51,40 @@ namespace FMBG.AI
 
         private void OnDrawGizmos()
         {
-            if (!DebugEnabled || actor == null || actor.Config == null)
+            if (actor == null || actor.Config == null || perception == null)
             {
                 return;
             }
 
             // 最后发现位置
-            if (perception != null && perception.HasLastKnownPosition)
+            if (perception.HasLastKnownPosition)
             {
                 Gizmos.color = lastKnownColor;
                 Gizmos.DrawWireSphere(perception.LastKnownPosition, 0.3f);
             }
         }
 
-        private float GetViewDistance()
+        private void DrawVisionCone(Vector3 origin, float radius, float angle)
         {
-            return actor != null && actor.Config != null ? actor.Config.Perception.viewDistance : 10f;
-        }
+            const int segments = 24;
+            Vector3 forward = transform.forward;
 
-        private float GetViewAngle()
-        {
-            return actor != null && actor.Config != null ? actor.Config.Perception.viewAngle : 100f;
+            Vector3 prev = origin + Quaternion.Euler(0f, -angle * 0.5f, 0f) * forward * radius;
+            for (int i = 1; i <= segments; i++)
+            {
+                float a = -angle * 0.5f + (angle * i / segments);
+                Vector3 next = origin + Quaternion.Euler(0f, a, 0f) * forward * radius;
+
+                Gizmos.color = viewDistanceColor;
+                Gizmos.DrawLine(prev, next);
+
+                // 扇形填充（半透明）
+                Gizmos.color = alertFillColor;
+                Gizmos.DrawLine(origin, prev);
+                Gizmos.DrawLine(origin, next);
+
+                prev = next;
+            }
         }
     }
 }

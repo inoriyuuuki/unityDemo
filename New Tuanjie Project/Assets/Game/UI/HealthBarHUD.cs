@@ -20,9 +20,11 @@ namespace FMBG.UI
         [SerializeField] private Color enemyBarColor = new(0.9f, 0.3f, 0.3f);
         [SerializeField] private Color bgColor = new(0f, 0f, 0f, 0.65f);
         [SerializeField] private Color alertColor = new(1f, 0.85f, 0.2f);
+        [SerializeField] private Color stateColor = new(1f, 1f, 1f);
 
         private GUIStyle barLabelStyle;
         private GUIStyle alertLabelStyle;
+        private GUIStyle stateLabelStyle;
 
         public void SetTargets(Health player, IEnumerable<Health> enemies)
         {
@@ -45,6 +47,12 @@ namespace FMBG.UI
                     fontSize = 11,
                     alignment = TextAnchor.MiddleCenter
                 };
+                stateLabelStyle = new GUIStyle(GUI.skin.label)
+                {
+                    fontSize = 13,
+                    fontStyle = FontStyle.Bold,
+                    alignment = TextAnchor.MiddleCenter
+                };
             }
 
             if (Camera.main == null)
@@ -54,7 +62,7 @@ namespace FMBG.UI
 
             if (playerHealth != null && playerHealth.gameObject.activeInHierarchy)
             {
-                DrawWorldBar(playerHealth.transform, playerHealth, playerBarColor, null);
+                DrawWorldBar(playerHealth.transform, playerHealth, playerBarColor, null, null);
             }
 
             if (enemyHealths != null)
@@ -68,12 +76,16 @@ namespace FMBG.UI
                     }
 
                     var perception = enemy.GetComponentInParent<EnemyPerception>();
-                    DrawWorldBar(enemy.transform, enemy, enemyBarColor, perception);
+                    var actor = enemy.GetComponentInParent<EnemyActor>();
+                    string state = actor != null && actor.StateMachine != null && actor.StateMachine.CurrentState != null
+                        ? actor.StateMachine.CurrentState.GetType().Name.Replace("StateNode", "")
+                        : null;
+                    DrawWorldBar(enemy.transform, enemy, enemyBarColor, perception, state);
                 }
             }
         }
 
-        private void DrawWorldBar(Transform target, Health health, Color barColor, EnemyPerception perception)
+        private void DrawWorldBar(Transform target, Health health, Color barColor, EnemyPerception perception, string state)
         {
             Vector3 worldPos = target.position + Vector3.up * heightAboveHead;
             Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
@@ -121,6 +133,14 @@ namespace FMBG.UI
                 GUI.color = alertColor;
                 var alertRect = new Rect(x, y - 18f, pixelWidth, 16f);
                 GUI.Label(alertRect, alertText, alertLabelStyle);
+            }
+
+            // 状态文字（敌人 AI 状态）
+            if (!string.IsNullOrEmpty(state))
+            {
+                GUI.color = stateColor;
+                var stateRect = new Rect(x, y - 36f, pixelWidth, 18f);
+                GUI.Label(stateRect, state, stateLabelStyle);
             }
         }
     }

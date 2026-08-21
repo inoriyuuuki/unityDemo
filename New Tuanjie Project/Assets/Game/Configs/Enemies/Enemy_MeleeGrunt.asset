@@ -29,7 +29,7 @@ MonoBehaviour:
     viewDistance: 10
     viewAngle: 100
     scanInterval: 0.1
-    alertDuration: 0.6
+    alertDuration: 2
     forgetDuration: 3
     targetLayers:
       serializedVersion: 2

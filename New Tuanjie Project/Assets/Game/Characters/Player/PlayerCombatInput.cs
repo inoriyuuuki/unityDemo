@@ -7,12 +7,27 @@ namespace FMBG.Characters
     public sealed class PlayerCombatInput : MonoBehaviour
     {
         [SerializeField] private CharacterCombat combat;
+        [SerializeField] private Health health;
         [SerializeField] private Camera mainCamera;
         [SerializeField] private LayerMask groundLayer = ~0;
+
+        private void Awake()
+        {
+            if (health == null)
+            {
+                health = GetComponent<Health>();
+            }
+        }
 
         private void Update()
         {
             if (combat == null)
+            {
+                return;
+            }
+
+            // 死亡后禁止攻击
+            if (health != null && !health.IsAlive)
             {
                 return;
             }

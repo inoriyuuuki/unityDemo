@@ -1,3 +1,4 @@
+using FMBG.Combat;
 using UnityEngine;
 
 namespace FMBG.Characters
@@ -14,21 +15,37 @@ namespace FMBG.Characters
         [SerializeField] private LayerMask groundLayer = ~0;
         [SerializeField] private float maxRayDistance = 100f;
 
+        [Header("Health")]
+        [SerializeField] private Health health;
+
         private CharacterController controller;
         private Camera mainCamera;
         private Vector3 moveInput;
 
         public Vector3 MoveInput => moveInput;
         public bool MovementLocked { get; private set; }
+        public bool IsDead => health != null && !health.IsAlive;
 
         private void Awake()
         {
             controller = GetComponent<CharacterController>();
             mainCamera = Camera.main;
+
+            if (health == null)
+            {
+                health = GetComponent<Health>();
+            }
         }
 
         private void Update()
         {
+            // 死亡后禁止控制
+            if (IsDead)
+            {
+                moveInput = Vector3.zero;
+                return;
+            }
+
             float h = Input.GetAxisRaw("Horizontal");
             float v = Input.GetAxisRaw("Vertical");
             moveInput = new Vector3(h, 0f, v).normalized;

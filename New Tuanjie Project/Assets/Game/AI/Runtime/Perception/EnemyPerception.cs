@@ -1,4 +1,5 @@
 using System;
+using FMBG.Combat;
 using UnityEngine;
 
 namespace FMBG.AI
@@ -63,6 +64,17 @@ namespace FMBG.AI
             Transform found = FindVisibleTarget();
             bool nowVisible = found != null;
 
+            // 当前目标已死亡：立即丢失目标
+            if (canSeeTarget && Target != null &&
+                Target.TryGetComponentInParent(out IDamageable tracked) &&
+                !tracked.IsAlive)
+            {
+                canSeeTarget = false;
+                Target = null;
+                TargetLost?.Invoke();
+                return;
+            }
+
             if (nowVisible)
             {
                 alertValue += settings.alertDuration * settings.scanInterval;
@@ -115,6 +127,14 @@ namespace FMBG.AI
             for (int i = 0; i < hits.Length; i++)
             {
                 Transform candidate = hits[i].transform;
+
+                // 跳过已死亡目标（玩家死亡后不再被敌人锁定）
+                if (candidate.TryGetComponentInParent(out IDamageable damageable) &&
+                    !damageable.IsAlive)
+                {
+                    continue;
+                }
+
                 Vector3 toTarget = candidate.position - self.position;
                 float distance = toTarget.magnitude;
                 if (distance > settings.viewDistance)

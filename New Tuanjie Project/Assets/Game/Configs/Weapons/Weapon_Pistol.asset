@@ -30,7 +30,7 @@ MonoBehaviour:
   minAttackRange: 0
   maxAttackRange: 9
   preferredAttackRange: 6
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: 8279173669593545121, guid: 8b1a151ce74b2490586b0b52143b2ed8, type: 3}
   projectileSpeed: 18
   projectileLifetime: 2.5
   spreadAngle: 0

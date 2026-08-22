@@ -15,10 +15,10 @@ MonoBehaviour:
   skillId: sword_slash
   displayName: "\u6325\u5251\u65A9"
   timelinePrefab: {fileID: 5576689662842814236, guid: e7683ffc15b824d3590ad2b967ae8f58, type: 3}
-  targetType: 3
+  targetType: 1
   cooldown: 1.2
   minCastRange: 0
-  maxCastRange: 2.5
+  maxCastRange: 1.8
   lockMovement: 1
   faceTarget: 1
   canBeInterrupted: 1

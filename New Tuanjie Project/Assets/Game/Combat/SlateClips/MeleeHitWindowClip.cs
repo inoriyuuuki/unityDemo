@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using FMBG.Combat;
+using FMBG.Skills;
 using UnityEngine;
 
 namespace FMBG.SlateClips
@@ -79,7 +80,7 @@ namespace FMBG.SlateClips
         private void PerformHitDetection()
         {
             var context = GetContext();
-            if (context == null || context.Combat == null || damagedTargets == null)
+            if (context == null || context.Combat == null || damagedTargets == null || actor == null)
             {
                 return;
             }
@@ -105,17 +106,15 @@ namespace FMBG.SlateClips
                     continue;
                 }
 
-                if (target is Component c && c.gameObject == context.Combat.gameObject)
+                if (!IsValidTarget(context, target))
                 {
                     continue;
                 }
 
-                if (damagedTargets.Contains(target))
+                if (!damagedTargets.Add(target))
                 {
                     continue;
                 }
-
-                damagedTargets.Add(target);
 
                 Vector3 hitPoint = hitResults[i].ClosestPoint(center);
                 target.TakeDamage(new DamageInfo(
@@ -127,6 +126,27 @@ namespace FMBG.SlateClips
                     0f,
                     DamageType.Melee));
             }
+        }
+
+        private static bool IsValidTarget(SkillExecutionContext context, IDamageable target)
+        {
+            if (target is not Component targetComponent)
+            {
+                return false;
+            }
+
+            if (targetComponent.gameObject == context.Combat.gameObject)
+            {
+                return false;
+            }
+
+            if (context.Combat.Faction == null ||
+                !targetComponent.TryGetComponentInParent(out FactionMember targetFaction))
+            {
+                return true;
+            }
+
+            return context.Combat.Faction.CanDamage(targetFaction);
         }
     }
 }

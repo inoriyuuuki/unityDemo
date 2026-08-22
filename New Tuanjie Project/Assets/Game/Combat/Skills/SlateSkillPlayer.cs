@@ -49,17 +49,26 @@ namespace FMBG.Skills
                 }
             }
 
+            // Actor 在运行时绑定后重新校验，确保 ActorActionTrack/Clip 立即变为有效状态。
+            currentTimeline.Validate();
+
             float contentLength = GetContentLength(currentTimeline);
             currentTimeline.Play(0f, contentLength, Slate.Cutscene.WrapMode.Once, Finish);
         }
 
         public void Stop()
         {
-            if (currentTimeline != null)
+            // Stop 可能同步触发 Cutscene 的完成回调并再次进入 Stop，先摘除字段避免重入空引用。
+            Cutscene timeline = currentTimeline;
+            currentTimeline = null;
+
+            if (timeline != null)
             {
-                currentTimeline.Stop(Slate.Cutscene.StopMode.Skip);
-                Destroy(currentTimeline.gameObject);
-                currentTimeline = null;
+                timeline.Stop(Slate.Cutscene.StopMode.Skip);
+                if (timeline != null)
+                {
+                    Destroy(timeline.gameObject);
+                }
             }
 
             currentContext = null;

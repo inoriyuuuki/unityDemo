@@ -10,6 +10,9 @@ namespace FMBG.SlateClips
         [Header("Projectile")]
         public Projectile projectilePrefab;
         public Transform muzzlePoint;
+
+        [Tooltip("未配置枪口节点时，相对施法者生成子弹的位置。")]
+        public Vector3 fallbackMuzzleOffset = new(0f, 0.8f, 0.6f);
         public float projectileSpeed = 18f;
         public float projectileLifetime = 3f;
         public float spreadAngle;
@@ -42,51 +45,72 @@ namespace FMBG.SlateClips
 
         protected override void OnEnter()
         {
-            if (!CanResolve || projectilePrefab == null)
+            if (!CanResolve)
             {
                 return;
             }
 
             var context = GetContext();
-            if (context == null || context.Combat == null)
+            if (context == null || context.Combat == null || actor == null)
             {
+                Debug.LogWarning("[Skill] 投射物生成失败：施法上下文或 Actor 未绑定。", this);
                 return;
             }
 
-            Vector3 aimDirection = GetAimDirection(context);
-            Transform origin = muzzlePoint != null ? muzzlePoint : actor.transform;
+            var rangedConfig = context.Weapon as RangedWeaponConfig;
+            Projectile resolvedPrefab = rangedConfig != null && rangedConfig.ProjectilePrefab != null
+                ? rangedConfig.ProjectilePrefab
+                : projectilePrefab;
 
-            for (int i = 0; i < Mathf.Max(1, projectileCount); i++)
+            if (resolvedPrefab == null)
+            {
+                Debug.LogWarning($"[Skill] {context.Skill?.DisplayName} 未配置投射物 Prefab。", this);
+                return;
+            }
+
+            Transform actorTransform = actor.transform;
+            Vector3 originPosition = muzzlePoint != null
+                ? muzzlePoint.position
+                : actorTransform.TransformPoint(fallbackMuzzleOffset);
+            Vector3 aimDirection = GetAimDirection(context, originPosition);
+
+            float resolvedSpeed = rangedConfig != null ? rangedConfig.ProjectileSpeed : projectileSpeed;
+            float resolvedLifetime = rangedConfig != null ? rangedConfig.ProjectileLifetime : projectileLifetime;
+            float resolvedSpread = rangedConfig != null ? rangedConfig.SpreadAngle : spreadAngle;
+            int resolvedCount = rangedConfig != null ? rangedConfig.ProjectileCount : projectileCount;
+            LayerMask resolvedLayers = rangedConfig != null ? rangedConfig.TargetLayers : targetLayers;
+
+            for (int i = 0; i < Mathf.Max(1, resolvedCount); i++)
             {
                 Quaternion spread = Quaternion.Euler(
                     0f,
-                    Random.Range(-spreadAngle, spreadAngle),
+                    Random.Range(-resolvedSpread, resolvedSpread),
                     0f);
 
                 Vector3 direction = spread * aimDirection;
                 Projectile projectile = Instantiate(
-                    projectilePrefab,
-                    origin.position,
+                    resolvedPrefab,
+                    originPosition,
                     Quaternion.LookRotation(direction, Vector3.up));
 
                 projectile.Initialize(
                     direction,
-                    projectileSpeed,
-                    projectileLifetime,
+                    resolvedSpeed,
+                    resolvedLifetime,
                     context.CalculateDamage(),
                     context.Combat.Faction,
                     context.Caster != null ? context.Caster.gameObject : actor,
-                    targetLayers);
+                    resolvedLayers);
             }
         }
 
-        private Vector3 GetAimDirection(SkillExecutionContext context)
+        private Vector3 GetAimDirection(SkillExecutionContext context, Vector3 originPosition)
         {
             Vector3 targetPosition = context.Target != null
                 ? context.Target.position
                 : context.TargetPosition;
 
-            Vector3 dir = targetPosition - actor.transform.position;
+            Vector3 dir = targetPosition - originPosition;
             dir.y = 0f;
             return dir.sqrMagnitude > 0.001f ? dir.normalized : actor.transform.forward;
         }

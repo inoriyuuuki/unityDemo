@@ -28,13 +28,26 @@ namespace FMBG.Skills
         /// </summary>
         public bool TryCast(SkillConfig skill, SkillCastRequest request, WeaponConfig weaponOverride)
         {
-            if (skill == null || IsCasting || IsOnCooldown(skill))
+            if (skill == null)
             {
+                return false;
+            }
+
+            if (IsCasting)
+            {
+                Debug.LogWarning($"[Skill] {skill.DisplayName} 释放失败：正在施法中。", this);
+                return false;
+            }
+
+            if (IsOnCooldown(skill))
+            {
+                Debug.LogWarning($"[Skill] {skill.DisplayName} 释放失败：冷却中（剩余 {GetCooldownRemaining(skill):0.0}s）。", this);
                 return false;
             }
 
             if (!IsInRange(skill, request))
             {
+                Debug.LogWarning($"[Skill] {skill.DisplayName} 释放失败：超出施法范围（最大 {skill.MaxCastRange}m）。", this);
                 return false;
             }
 
@@ -63,7 +76,31 @@ namespace FMBG.Skills
                 playerController.SetMovementLocked(true);
             }
 
-            slatePlayer.Play(context, () => FinishSkill(context));
+            try
+            {
+                slatePlayer.Play(context, () => FinishSkill(context));
+            }
+            catch (System.Exception e)
+            {
+                // 时间轴启动失败时清理状态，避免 IsCasting 永久卡死导致后续技能全部失效
+                Debug.LogError($"[Skill] {skill.DisplayName} 时间轴启动失败：{e.Message}", this);
+                if (cooldowns.ContainsKey(skill.SkillId))
+                {
+                    cooldowns.Remove(skill.SkillId);
+                }
+
+                if (playerController != null)
+                {
+                    playerController.SetMovementLocked(false);
+                }
+
+                if (slatePlayer != null)
+                {
+                    slatePlayer.Stop();
+                }
+
+                return false;
+            }
 
             return true;
         }
@@ -123,7 +160,18 @@ namespace FMBG.Skills
 
         private bool IsInRange(SkillConfig skill, SkillCastRequest request)
         {
-            float distance = Vector3.Distance(transform.position, request.TargetPosition);
+            // 方向技能在没有锁定单位时只使用目标点决定朝向，不应因为鼠标点较远而拒绝施法。
+            if (skill.TargetType == SkillTargetType.None ||
+                (skill.TargetType == SkillTargetType.Direction && request.Target == null))
+            {
+                return true;
+            }
+
+            // 俯视角战斗按地面平面计算距离，避免角色根节点高度与地面点击点的 Y 差缩短有效范围。
+            Vector3 delta = request.TargetPosition - transform.position;
+            delta.y = 0f;
+            float distance = delta.magnitude;
+
             if (skill.MinCastRange > 0f && distance < skill.MinCastRange)
             {
                 return false;

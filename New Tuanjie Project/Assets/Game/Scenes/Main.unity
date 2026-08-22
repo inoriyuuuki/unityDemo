@@ -1160,7 +1160,7 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   groundLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1
   meleeWeapon: {fileID: 11400000, guid: 335f613c71fb34a85b00bf45804a3c29, type: 2}
   rangedWeapon: {fileID: 11400000, guid: 10fc962d8a38542afae21c4a47643dbb, type: 2}
   meleeSkill: {fileID: 11400000, guid: a459a476cec9e47439758f187e32c260, type: 2}
@@ -2862,7 +2862,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5df5544ef8c4648e1b218d0df24d81e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Faction>k__BackingField: 0
+  <Faction>k__BackingField: 1
 --- !u!114 &642994877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10023,7 +10023,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5df5544ef8c4648e1b218d0df24d81e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Faction>k__BackingField: 0
+  <Faction>k__BackingField: 1
 --- !u!114 &1994925152
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10460,7 +10460,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5df5544ef8c4648e1b218d0df24d81e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Faction>k__BackingField: 0
+  <Faction>k__BackingField: 1
 --- !u!114 &2001059584
 MonoBehaviour:
   m_ObjectHideFlags: 0

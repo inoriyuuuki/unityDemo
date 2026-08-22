@@ -14,7 +14,7 @@ namespace FMBG.Characters
         [SerializeField] private CharacterSkillController skillController;
         [SerializeField] private Health health;
         [SerializeField] private Camera mainCamera;
-        [SerializeField] private LayerMask groundLayer = ~0;
+        [SerializeField] private LayerMask groundLayer = 1 << 0;
 
         [Header("Weapons / Skills")]
         [SerializeField] private WeaponConfig meleeWeapon;   // 剑

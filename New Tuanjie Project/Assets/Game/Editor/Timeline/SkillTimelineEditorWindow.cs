@@ -471,11 +471,12 @@ namespace FMBG.EditorTools
             element.style.borderRightColor = new Color(1f, 1f, 1f, 0.45f);
             element.style.overflow = Overflow.Hidden;
             element.style.backgroundColor = TrackColors[trackType] * 0.82f;
+            element.tooltip = "中间拖动平移；左右边缘拖动修改起止时间";
 
             Label label = new(clip.Info);
             label.style.position = Position.Absolute;
-            label.style.left = 6f;
-            label.style.right = 6f;
+            label.style.left = 12f;
+            label.style.right = 12f;
             label.style.top = 0f;
             label.style.bottom = 0f;
             label.style.unityTextAlign = TextAnchor.MiddleLeft;
@@ -523,25 +524,46 @@ namespace FMBG.EditorTools
             handle.style.position = Position.Absolute;
             handle.style.top = 0f;
             handle.style.bottom = 0f;
-            handle.style.width = 7f;
+            handle.style.width = 10f;
             if (side == "left")
             {
                 handle.style.left = 0f;
+                handle.style.borderRightWidth = 1f;
+                handle.style.borderRightColor = new Color(0f, 0f, 0f, 0.25f);
+                handle.tooltip = "拖动修改开始时间";
             }
             else
             {
                 handle.style.right = 0f;
+                handle.style.borderLeftWidth = 1f;
+                handle.style.borderLeftColor = new Color(0f, 0f, 0f, 0.25f);
+                handle.tooltip = "拖动修改结束时间";
             }
 
-            handle.style.backgroundColor = new Color(1f, 1f, 1f, 0.15f);
+            handle.style.backgroundColor = new Color(1f, 1f, 1f, 0.28f);
             return handle;
         }
 
         private void LayoutClipElement(SkillTimelineClip clip, VisualElement element)
         {
             float pps = PixelsPerSecond;
+            float width = Mathf.Max(6f, clip.Duration * pps);
             element.style.left = clip.StartTime * pps;
-            element.style.width = Mathf.Max(6f, clip.Duration * pps);
+            element.style.width = width;
+
+            // 片段太短时不显示左右手柄，整体作为平移区域；变宽后手柄自动出现
+            bool showHandles = width >= 18f;
+            VisualElement leftHandle = element.Q("leftHandle");
+            VisualElement rightHandle = element.Q("rightHandle");
+            if (leftHandle != null)
+            {
+                leftHandle.style.display = showHandles ? DisplayStyle.Flex : DisplayStyle.None;
+            }
+
+            if (rightHandle != null)
+            {
+                rightHandle.style.display = showHandles ? DisplayStyle.Flex : DisplayStyle.None;
+            }
         }
 
         private void ApplyClipStyle(VisualElement element, bool selected, bool active)
@@ -639,8 +661,7 @@ namespace FMBG.EditorTools
 
             if (dragElement != null)
             {
-                dragElement.style.left = dragClip.StartTime * pps;
-                dragElement.style.width = Mathf.Max(6f, dragClip.Duration * pps);
+                LayoutClipElement(dragClip, dragElement);
             }
 
             EditorUtility.SetDirty(timeline);
@@ -690,10 +711,29 @@ namespace FMBG.EditorTools
 
         private void SelectClip(SkillTimelineClip clip)
         {
+            if (selectedClip == clip)
+            {
+                return;
+            }
+
             selectedClip = clip;
             deleteButton.SetEnabled(clip != null);
-            RefreshTimelineLayout();
+            UpdateSelectionStyles();
             RefreshInspector();
+        }
+
+        private void UpdateSelectionStyles()
+        {
+            foreach (KeyValuePair<SkillTimelineClip, VisualElement> pair in clipElements)
+            {
+                bool isSelected = pair.Key == selectedClip;
+                pair.Value.style.borderTopWidth = isSelected ? 2f : 0f;
+                pair.Value.style.borderBottomWidth = isSelected ? 2f : 0f;
+                pair.Value.style.borderTopColor = Color.white;
+                pair.Value.style.borderBottomColor = Color.white;
+                pair.Value.style.borderLeftColor = isSelected ? Color.white : new Color(1f, 1f, 1f, 0.45f);
+                pair.Value.style.borderRightColor = isSelected ? Color.white : new Color(1f, 1f, 1f, 0.45f);
+            }
         }
 
         private void DeleteSelectedClip()

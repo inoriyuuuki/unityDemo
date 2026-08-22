@@ -11,7 +11,7 @@ using UnityEngine.TestTools;
 
 namespace FMBG.Tests
 {
-    /// <summary>玩家通过 Slate 技能时间轴结算近战伤害并生成远程投射物。</summary>
+    /// <summary>玩家通过 Slate 技能时间轴结算近战伤害、投射物与相机行为。</summary>
     public sealed class PlayerSkillCombatPlayModeTests
     {
         private GameObject player;
@@ -116,6 +116,61 @@ namespace FMBG.Tests
 
             yield return new WaitForSeconds(0.3f);
             Assert.Less(target.Health.CurrentHealth, 100f, "投射物命中敌人后应造成伤害");
+        }
+
+        [UnityTest]
+        public IEnumerator Camera_RemainsActiveAndFollowsPlayerDuringSkill()
+        {
+            Camera mainCamera = Camera.main;
+            Assert.IsNotNull(mainCamera);
+
+            mainCamera.transform.position = player.transform.position + new Vector3(0f, 10f, -5f);
+            Assert.IsNotNull(mainCamera.GetComponent<FMBG.Cameras.TopDownCamera>());
+
+            WeaponConfig meleeWeapon = GetPrivateField<WeaponConfig>(input, "meleeWeapon");
+            bool cast = skillController.TryCast(
+                input.MeleeSkill,
+                new SkillCastRequest(target.transform.position, null),
+                meleeWeapon);
+            Assert.IsTrue(cast);
+
+            yield return new WaitForSeconds(0.1f);
+            Assert.IsTrue(mainCamera.gameObject.activeInHierarchy,
+                "技能时间轴不应禁用主相机");
+
+            float startX = mainCamera.transform.position.x;
+            player.transform.position += Vector3.right * 4f;
+            Physics.SyncTransforms();
+            yield return new WaitForSeconds(0.6f);
+
+            Assert.Greater(mainCamera.transform.position.x, startX + 2f,
+                "攻击期间主相机仍应继续跟随玩家");
+        }
+
+        [Test]
+        public void PlayerInvincibility_BlocksDamage()
+        {
+            var debugMode = player.GetComponent<PlayerInvincibilityDebug>();
+            Health health = player.GetComponent<Health>();
+            Assert.IsNotNull(debugMode, "Player 应挂载 F1 无敌模式组件");
+            Assert.IsNotNull(health);
+
+            health.Initialize(100f);
+            health.SetInvincible(true);
+            health.TakeDamage(new DamageInfo(
+                50f,
+                target.gameObject,
+                target.Combat.Faction,
+                player.transform.position));
+            Assert.AreEqual(100f, health.CurrentHealth, "无敌模式开启时不应受到伤害");
+
+            health.SetInvincible(false);
+            health.TakeDamage(new DamageInfo(
+                10f,
+                target.gameObject,
+                target.Combat.Faction,
+                player.transform.position));
+            Assert.AreEqual(90f, health.CurrentHealth, "关闭无敌模式后应正常受到伤害");
         }
 
         private static T GetPrivateField<T>(object owner, string fieldName) where T : class

@@ -11,6 +11,7 @@ namespace FMBG.Combat
         public float CurrentHealth { get; private set; }
         public float MaxHealth => maxHealth;
         public bool IsAlive => CurrentHealth > 0f;
+        public bool IsInvincible { get; private set; }
 
         public event Action<DamageInfo> Damaged;
         public event Action<DamageInfo> Died;
@@ -27,9 +28,14 @@ namespace FMBG.Combat
             CurrentHealth = maxHealth;
         }
 
+        public void SetInvincible(bool invincible)
+        {
+            IsInvincible = invincible;
+        }
+
         public void TakeDamage(DamageInfo damageInfo)
         {
-            if (!IsAlive)
+            if (!IsAlive || IsInvincible)
             {
                 return;
             }

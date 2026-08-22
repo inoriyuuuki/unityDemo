@@ -129,17 +129,10 @@ namespace FMBG.Skills
                     continue;
                 }
 
-                // 从所属 group 的 tracks 列表中移除并销毁
-                var group = cameraTrack.transform.parent != null
-                    ? cameraTrack.transform.parent.GetComponent<CutsceneGroup>()
-                    : null;
-
-                if (group != null)
-                {
-                    group.tracks.Remove(cameraTrack);
-                }
-
-                Destroy(cameraTrack.gameObject);
+                // Destroy 在运行时会延迟到帧末；期间 Validate 会把 CameraTrack 重新加入，
+                // 使 Slate 禁用主相机。直接将轨道设为非激活，保证后续校验也不会执行它。
+                cameraTrack.isActive = false;
+                cameraTrack.gameObject.SetActive(false);
             }
 
             cutscene.Validate();

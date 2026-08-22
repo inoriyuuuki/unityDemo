@@ -12,6 +12,17 @@ namespace FMBG.Cameras
         [SerializeField] private float mouseOffsetStrength = 0.35f;
 
         private Vector3 velocity;
+        private Camera controlledCamera;
+
+        private void Awake()
+        {
+            controlledCamera = GetComponent<Camera>();
+            if (target != null)
+            {
+                transform.position = target.position + offset;
+                transform.rotation = Quaternion.Euler(lookAngle, 0f, 0f);
+            }
+        }
 
         private void LateUpdate()
         {
@@ -21,16 +32,13 @@ namespace FMBG.Cameras
             }
 
             Vector3 desired = target.position + offset;
-
-            // 相机看向玩家
-            Vector3 direction = target.position - desired;
             transform.rotation = Quaternion.Euler(lookAngle, 0f, 0f);
 
-            Vector3 mouseWorld = Vector3.zero;
-            if (Camera.main != null)
+            Vector3 mouseWorld = target.position;
+            if (mouseOffsetStrength > 0f && controlledCamera != null)
             {
                 Plane ground = new(Vector3.up, target.position);
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                Ray ray = controlledCamera.ScreenPointToRay(Input.mousePosition);
                 if (ground.Raycast(ray, out float enter))
                 {
                     mouseWorld = ray.GetPoint(enter);

@@ -26,7 +26,7 @@ namespace FMBG.AI
 
             context.Motor.FaceTowards(target.position, deltaTime);
 
-            // 优先使用技能控制器（Slate 技能），否则回退到武器基础攻击
+            // 优先使用技能控制器（SkillTimeline 技能），否则回退到武器基础攻击
             if (context.SkillController != null && context.SkillController.IsCasting)
             {
                 return;

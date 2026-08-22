@@ -11,7 +11,7 @@ using UnityEngine.TestTools;
 
 namespace FMBG.Tests
 {
-    /// <summary>玩家通过 Slate 技能时间轴结算近战伤害、投射物与相机行为。</summary>
+    /// <summary>玩家通过技能时间轴结算近战伤害、投射物与相机行为。</summary>
     public sealed class PlayerSkillCombatPlayModeTests
     {
         private GameObject player;

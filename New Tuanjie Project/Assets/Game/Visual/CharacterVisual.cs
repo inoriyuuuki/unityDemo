@@ -34,7 +34,7 @@ namespace FMBG.Visual
         private Vector3 lastPosition;
         private float moveAmount;
 
-        // 技能攻击动画（由 Slate AttackAnimationClip 触发）
+        // 技能攻击动画（由技能时间轴 AttackAnimationClip 触发）
         private float attackAnimTimer = -1f;
         private float attackAnimDuration = 0.4f;
         private Vector3 armBaseRotation;   // 记录手臂初始旋转，动画结束恢复
@@ -113,7 +113,7 @@ namespace FMBG.Visual
         }
 
         /// <summary>
-        /// 播放一次攻击动画（由 Slate 技能时间轴 AttackAnimationClip 触发）：
+        /// 播放一次攻击动画（由技能时间轴 AttackAnimationClip 触发）：
         /// 右臂（持武器）抬起→前挥→收回，身体轻微前倾，武器同步挥砍。
         /// </summary>
         public void PlayAttackAnimation(float duration)

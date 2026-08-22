@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cafaf3b62ccd48058107278e613fb51, type: 3}
+  m_Name: Skill_PistolShot_Timeline
+  m_EditorClassIdentifier: 
+  length: 0.25
+  clips:
+  - rid: 9099635699718291485
+  - rid: 9099635699718291486
+  - rid: 9099635699718291487
+  references:
+    version: 2
+    RefIds:
+    - rid: 9099635699718291485
+      type: {class: AttackAnimationClip, ns: FMBG.Timeline, asm: Game.Runtime}
+      data:
+        clipName: 
+        startTime: 0
+        duration: 0.25
+        trackType: 0
+    - rid: 9099635699718291486
+      type: {class: SpawnProjectileClip, ns: FMBG.Timeline, asm: Game.Runtime}
+      data:
+        clipName: 
+        startTime: 0.05
+        duration: 0.01
+        trackType: 1
+        projectilePrefab: {fileID: 8279173669593545121, guid: 8b1a151ce74b2490586b0b52143b2ed8, type: 3}
+        muzzlePoint: {fileID: 0}
+        fallbackMuzzleOffset: {x: 0, y: 0.8, z: 0.6}
+        projectileSpeed: 18
+        projectileLifetime: 2.5
+        spreadAngle: 0
+        projectileCount: 1
+        targetLayers:
+          serializedVersion: 2
+          m_Bits: 1536
+    - rid: 9099635699718291487
+      type: {class: PlaySkillAudioClip, ns: FMBG.Timeline, asm: Game.Runtime}
+      data:
+        clipName: 
+        startTime: 0.05
+        duration: 0.01
+        trackType: 3
+        audioClip: {fileID: 0}
+        volume: 1

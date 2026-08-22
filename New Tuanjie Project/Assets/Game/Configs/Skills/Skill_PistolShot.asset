@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillId: pistol_shot
   displayName: "\u624B\u67AA\u5C04\u51FB"
-  timelinePrefab: {fileID: 4460998129214618687, guid: d9dbc6bfc165f4d9a86c9f894017a80b, type: 3}
+  timeline: {fileID: 11400000, guid: da80b5a18214447a8ab24554ed7ac581, type: 2}
   targetType: 2
   cooldown: 0.8
   minCastRange: 0

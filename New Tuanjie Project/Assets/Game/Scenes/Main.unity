@@ -1266,7 +1266,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   combat: {fileID: 300862406}
   playerController: {fileID: 300862408}
-  slatePlayer: {fileID: 300862413}
+  timelinePlayer: {fileID: 300862413}
 --- !u!114 &300862413
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2808,7 +2808,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   combat: {fileID: 642994877}
   playerController: {fileID: 0}
-  slatePlayer: {fileID: 642994873}
+  timelinePlayer: {fileID: 642994873}
 --- !u!114 &642994873
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10163,7 +10163,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   combat: {fileID: 1994925152}
   playerController: {fileID: 0}
-  slatePlayer: {fileID: 1994925162}
+  timelinePlayer: {fileID: 1994925162}
 --- !u!114 &1994925162
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10406,7 +10406,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   combat: {fileID: 2001059584}
   playerController: {fileID: 0}
-  slatePlayer: {fileID: 2001059580}
+  timelinePlayer: {fileID: 2001059580}
 --- !u!114 &2001059580
 MonoBehaviour:
   m_ObjectHideFlags: 0

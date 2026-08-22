@@ -3,7 +3,8 @@
   "references": [
     "Game.Runtime",
     "Game.Editor",
-    "SLATE"
+    "UnityEditor.UIElementsModule",
+    "UnityEngine.UIElementsModule"
   ],
   "includePlatforms": [
     "Editor"

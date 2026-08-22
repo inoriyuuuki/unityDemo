@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cafaf3b62ccd48058107278e613fb51, type: 3}
+  m_Name: Skill_SwordSlash_Timeline
+  m_EditorClassIdentifier: 
+  length: 0.71000004
+  clips:
+  - rid: 9099635699718291481
+  - rid: 9099635699718291482
+  - rid: 9099635699718291483
+  - rid: 9099635699718291484
+  references:
+    version: 2
+    RefIds:
+    - rid: 9099635699718291481
+      type: {class: AttackAnimationClip, ns: FMBG.Timeline, asm: Game.Runtime}
+      data:
+        clipName: 
+        startTime: 0
+        duration: 0.32000005
+        trackType: 0
+    - rid: 9099635699718291482
+      type: {class: MeleeHitWindowClip, ns: FMBG.Timeline, asm: Game.Runtime}
+      data:
+        clipName: 
+        startTime: 0.08
+        duration: 0.1
+        trackType: 1
+        hitboxOffset: {x: 0, y: 0.8, z: 1}
+        hitboxSize: {x: 1.2, y: 1.5, z: 1.8}
+        targetLayers:
+          serializedVersion: 2
+          m_Bits: 1536
+        detectDuringEntireDuration: 1
+    - rid: 9099635699718291483
+      type: {class: SpawnEffectClip, ns: FMBG.Timeline, asm: Game.Runtime}
+      data:
+        clipName: 
+        startTime: 0.06
+        duration: 0.01
+        trackType: 2
+        effectPrefab: {fileID: 0}
+        offset: {x: 0, y: 0, z: 0}
+        destroyDelay: 0.3
+    - rid: 9099635699718291484
+      type: {class: PlaySkillAudioClip, ns: FMBG.Timeline, asm: Game.Runtime}
+      data:
+        clipName: 
+        startTime: 0.06
+        duration: 0.01
+        trackType: 3
+        audioClip: {fileID: 0}
+        volume: 1

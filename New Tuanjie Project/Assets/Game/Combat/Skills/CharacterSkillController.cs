@@ -10,13 +10,13 @@ namespace FMBG.Skills
     {
         [SerializeField] private CharacterCombat combat;
         [SerializeField] private PlayerController playerController;
-        [SerializeField] private SlateSkillPlayer slatePlayer;
+        [SerializeField] private SkillTimelinePlayer timelinePlayer;
 
         private readonly Dictionary<string, float> cooldowns = new();
 
-        public bool IsCasting => slatePlayer != null && slatePlayer.IsPlaying;
+        public bool IsCasting => timelinePlayer != null && timelinePlayer.IsPlaying;
 
-        public SkillExecutionContext CurrentContext => slatePlayer != null ? slatePlayer.CurrentContext : null;
+        public SkillExecutionContext CurrentContext => timelinePlayer != null ? timelinePlayer.CurrentContext : null;
 
         public bool TryCast(SkillConfig skill, SkillCastRequest request)
         {
@@ -78,7 +78,7 @@ namespace FMBG.Skills
 
             try
             {
-                slatePlayer.Play(context, () => FinishSkill(context));
+                timelinePlayer.Play(context, () => FinishSkill(context));
             }
             catch (System.Exception e)
             {
@@ -94,9 +94,9 @@ namespace FMBG.Skills
                     playerController.SetMovementLocked(false);
                 }
 
-                if (slatePlayer != null)
+                if (timelinePlayer != null)
                 {
-                    slatePlayer.Stop();
+                    timelinePlayer.Stop();
                 }
 
                 return false;
@@ -117,9 +117,9 @@ namespace FMBG.Skills
 
         public void Interrupt()
         {
-            if (slatePlayer != null)
+            if (timelinePlayer != null)
             {
-                slatePlayer.Stop();
+                timelinePlayer.Stop();
             }
 
             if (playerController != null)

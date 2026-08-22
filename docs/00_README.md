@@ -20,7 +20,7 @@
 - ✅ **核心闭环**：玩家移动/朝向、俯视跟随相机、战斗系统（伤害/阵营/武器/投射物）
 - ✅ **敌人 AI**：GraphView 可视化状态机（Idle/Patrol/Chase/Attack/Investigate/Return/Dead），切换条件可视化连线（已由 xNode 迁移至 Unity GraphView）
 - ✅ **配置化**：`EnemyConfig` / `WeaponConfig` / `SkillConfig`（ScriptableObject 只读模板）
-- ✅ **Slate 技能**：技能时间轴 + 自定义 Clip + 攻击动画
+- ✅ **技能时间轴（UI Toolkit 编辑器）**：`SkillTimeline` 资源 + 自定义 Clip + 攻击动画（替代原 Slate，Slate 已删除）
 - ✅ **玩家双武器**：左键近战（剑）/ 右键远程（手枪）+ 冷却 UI
 - ✅ **表现**：程序化角色/武器模型、攻击动画、运行时警戒范围可视化、HUD（血条/状态/警戒值）
 - ✅ **多敌人**：近战 x2 + 远程 x1 独立运行
@@ -37,12 +37,12 @@
 
 ## 设计核心结论（一句话版）
 
-> **GraphView 状态图决定敌人"何时做什么"，Slate 描述技能"在什么时间发生什么"，ScriptableObject 保存"敌人/武器/技能静态配置"；玩家与敌人共用同一套战斗与技能系统。**
+> **GraphView 状态图决定敌人"何时做什么"，SkillTimeline 描述技能"在什么时间发生什么"，ScriptableObject 保存"敌人/武器/技能静态配置"；玩家与敌人共用同一套战斗与技能系统。**
 
 ## 三层职责边界
 
 | 层 | 负责内容 | 对应系统 |
 |---|---|---|
 | GraphView | 敌人状态机：状态与转换关系（运行时为纯数据模型） | `EnemyStateGraph` + `EnemyStateMachineRunner` + `EnemyStateMachineCompiler` |
-| Slate | 技能时序：攻击动画、伤害帧、位移、子弹、特效、音效 | `SlateSkillPlayer` + 自定义 ActionClip |
+| SkillTimeline | 技能时序：攻击动画、伤害帧、位移、子弹、特效、音效 | `SkillTimelinePlayer` + 自定义 Clip（UI Toolkit 编辑器） |
 | ScriptableObject | 静态配置：敌人参数、武器参数、技能规则 | `EnemyConfig` / `WeaponConfig` / `SkillConfig` |

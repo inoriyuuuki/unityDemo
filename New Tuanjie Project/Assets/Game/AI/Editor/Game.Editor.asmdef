@@ -2,7 +2,6 @@
   "name": "Game.Editor",
   "references": [
     "Game.Runtime",
-    "SLATE",
     "UnityEditor.GraphViewModule",
     "UnityEngine.UIElementsModule"
   ],

@@ -2,8 +2,7 @@ using System.Collections.Generic;
 using FMBG.AI;
 using FMBG.Combat;
 using FMBG.Skills;
-using FMBG.SlateClips;
-using Slate;
+using FMBG.Timeline;
 using UnityEditor;
 using UnityEngine;
 
@@ -236,31 +235,36 @@ namespace FMBG.EditorTools
             SetField(skill, "canBeInterrupted", true);
             SetField(skill, "damageMultiplier", 1f);
 
-            // 创建 Slate 时间轴 prefab（先添加 clip，再保存）
+            // 创建技能时间轴资源（先配置 Clip，再保存）
             var timeline = CreateSkillTimeline(
-                "Assets/Game/Prefabs/Skill_SwordSlash.prefab",
-                (casterGroup, animationTrack, gameplayTrack, effectTrack) =>
+                "Assets/Game/Configs/Timelines/Skill_SwordSlash_Timeline.asset",
+                timeline =>
                 {
                     // Animation Track: 攻击动画 (0.00 - 0.40)
-                    var anim = animationTrack.AddAction<FMBG.SlateClips.AttackAnimationClip>(0.0f);
-                    SetProperty(anim, "length", 0.4f);
+                    timeline.AddClip(new AttackAnimationClip { StartTime = 0f, Duration = 0.4f });
 
                     // Gameplay Track: 伤害窗口 (0.08 - 0.18)
-                    var hitWindow = gameplayTrack.AddAction<MeleeHitWindowClip>(0.08f);
-                    SetField(hitWindow, "hitboxOffset", new Vector3(0f, 0.8f, 1f));
-                    SetField(hitWindow, "hitboxSize", new Vector3(1.2f, 1.5f, 1.8f));
-                    SetField(hitWindow, "targetLayers", LayerMask.GetMask("Enemy", "Player"));
-                    SetProperty(hitWindow, "length", 0.10f);
+                    timeline.AddClip(new MeleeHitWindowClip
+                    {
+                        StartTime = 0.08f,
+                        Duration = 0.10f,
+                        hitboxOffset = new Vector3(0f, 0.8f, 1f),
+                        hitboxSize = new Vector3(1.2f, 1.5f, 1.8f),
+                        targetLayers = LayerMask.GetMask("Enemy", "Player")
+                    });
 
                     // Effect Track: 特效 + 音效
-                    var trail = effectTrack.AddAction<SpawnEffectClip>(0.06f);
-                    SetField(trail, "offset", Vector3.zero);
-                    SetField(trail, "destroyDelay", 0.3f);
+                    timeline.AddClip(new SpawnEffectClip
+                    {
+                        StartTime = 0.06f,
+                        Duration = 0.01f,
+                        destroyDelay = 0.3f
+                    });
 
-                    effectTrack.AddAction<PlaySkillAudioClip>(0.06f);
+                    timeline.AddClip(new PlaySkillAudioClip { StartTime = 0.06f, Duration = 0.01f });
                 });
 
-            SetField(skill, "timelinePrefab", timeline);
+            SetField(skill, "timeline", timeline);
             EditorUtility.SetDirty(skill);
             AssetDatabase.SaveAssets();
         }
@@ -287,26 +291,28 @@ namespace FMBG.EditorTools
             SetField(skill, "damageMultiplier", 1f);
 
             var timeline = CreateSkillTimeline(
-                "Assets/Game/Prefabs/Skill_PistolShot.prefab",
-                (casterGroup, animationTrack, gameplayTrack, effectTrack) =>
+                "Assets/Game/Configs/Timelines/Skill_PistolShot_Timeline.asset",
+                timeline =>
                 {
                     // Animation Track: 攻击动画（后坐力）
-                    var anim = animationTrack.AddAction<FMBG.SlateClips.AttackAnimationClip>(0.0f);
-                    SetProperty(anim, "length", 0.25f);
+                    timeline.AddClip(new AttackAnimationClip { StartTime = 0f, Duration = 0.25f });
                     // Gameplay Track: 生成弹丸 (0.05)
-                    var spawn = gameplayTrack.AddAction<SpawnProjectileClip>(0.05f);
-                    SetField(spawn, "projectilePrefab",
-                        AssetDatabase.LoadAssetAtPath<FMBG.Combat.Projectile>("Assets/Game/Prefabs/Projectile_Pistol.prefab"));
-                    SetField(spawn, "projectileSpeed", 18f);
-                    SetField(spawn, "projectileLifetime", 2.5f);
-                    SetField(spawn, "spreadAngle", 0f);
-                    SetField(spawn, "projectileCount", 1);
-                    SetField(spawn, "targetLayers", LayerMask.GetMask("Enemy", "Player"));
+                    timeline.AddClip(new SpawnProjectileClip
+                    {
+                        StartTime = 0.05f,
+                        Duration = 0.01f,
+                        projectilePrefab = AssetDatabase.LoadAssetAtPath<FMBG.Combat.Projectile>("Assets/Game/Prefabs/Projectile_Pistol.prefab"),
+                        projectileSpeed = 18f,
+                        projectileLifetime = 2.5f,
+                        spreadAngle = 0f,
+                        projectileCount = 1,
+                        targetLayers = LayerMask.GetMask("Enemy", "Player")
+                    });
 
-                    effectTrack.AddAction<PlaySkillAudioClip>(0.05f);
+                    timeline.AddClip(new PlaySkillAudioClip { StartTime = 0.05f, Duration = 0.01f });
                 });
 
-            SetField(skill, "timelinePrefab", timeline);
+            SetField(skill, "timeline", timeline);
             EditorUtility.SetDirty(skill);
             AssetDatabase.SaveAssets();
         }
@@ -332,26 +338,26 @@ namespace FMBG.EditorTools
             AssetDatabase.SaveAssets();
         }
 
-        private static Cutscene CreateSkillTimeline(
-            string prefabPath,
-            System.Action<ActorGroup, ActorActionTrack, ActorActionTrack, ActorActionTrack> configure)
+        private static SkillTimeline CreateSkillTimeline(
+            string assetPath,
+            System.Action<SkillTimeline> configure)
         {
-            var go = new GameObject("SkillTimeline");
-            var cutscene = go.AddComponent<Cutscene>();
+            string folder = assetPath.Substring(0, assetPath.LastIndexOf('/'));
+            EnsureFolder(folder);
 
-            var casterGroup = cutscene.AddGroup<ActorGroup>();
-            casterGroup.name = "Caster";
+            var timeline = LoadOrCreate<SkillTimeline>(assetPath);
+            if (timeline == null)
+            {
+                return null;
+            }
 
-            var animationTrack = casterGroup.AddTrack<ActorActionTrack>("Animation");
-            var gameplayTrack = casterGroup.AddTrack<ActorActionTrack>("Gameplay");
-            var effectTrack = casterGroup.AddTrack<ActorActionTrack>("Effect");
-
-            // 保存前先配置 clip（此时对象尚未销毁）
-            configure?.Invoke(casterGroup, animationTrack, gameplayTrack, effectTrack);
-
-            var prefab = PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
-            Object.DestroyImmediate(go);
-            return prefab != null ? prefab.GetComponent<Cutscene>() : null;
+            timeline.name = System.IO.Path.GetFileNameWithoutExtension(assetPath);
+            timeline.ClearClips();
+            timeline.Length = 0.1f;
+            configure?.Invoke(timeline);
+            timeline.EnsureLengthCoversContent();
+            EditorUtility.SetDirty(timeline);
+            return timeline;
         }
 
         private static T LoadOrCreate<T>(string path) where T : ScriptableObject
@@ -396,18 +402,6 @@ namespace FMBG.EditorTools
             else
             {
                 Debug.LogWarning("[GameAssetFactory] 找不到字段: " + fieldName);
-            }
-        }
-
-        private static void SetProperty(Object obj, string propertyName, object value)
-        {
-            var prop = obj.GetType().GetProperty(propertyName,
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.FlattenHierarchy);
-            if (prop != null && prop.CanWrite)
-            {
-                prop.SetValue(obj, value);
             }
         }
 

@@ -1,4 +1,4 @@
-using Slate;
+using FMBG.Timeline;
 using UnityEngine;
 
 namespace FMBG.Skills
@@ -11,7 +11,7 @@ namespace FMBG.Skills
         Unit
     }
 
-    /// <summary>技能静态配置：规则 + Slate 时间轴入口。</summary>
+    /// <summary>技能静态配置：规则 + 技能时间轴入口。</summary>
     [CreateAssetMenu(
         fileName = "SkillConfig",
         menuName = "Game/Combat/Skill Config")]
@@ -21,8 +21,8 @@ namespace FMBG.Skills
         [SerializeField] private string skillId;
         [SerializeField] private string displayName;
 
-        [Header("Slate")]
-        [SerializeField] private Cutscene timelinePrefab;
+        [Header("Timeline")]
+        [SerializeField] private SkillTimeline timeline;
 
         [Header("Cast")]
         [SerializeField] private SkillTargetType targetType;
@@ -40,7 +40,7 @@ namespace FMBG.Skills
 
         public string SkillId => skillId;
         public string DisplayName => displayName;
-        public Cutscene TimelinePrefab => timelinePrefab;
+        public SkillTimeline Timeline => timeline;
 
         public SkillTargetType TargetType => targetType;
         public float Cooldown => cooldown;

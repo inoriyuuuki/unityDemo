@@ -1,3 +1,5 @@
+using FMBG.Combat;
+using FMBG.Skills;
 using UnityEngine;
 using XNode;
 
@@ -34,15 +36,14 @@ namespace FMBG.AI
 
             if (context.SkillController != null && context.SkillSelector != null)
             {
-                var weapon = context.Combat.CurrentWeaponConfig;
-                FMBG.Skills.SkillConfig skill =
-                    context.SkillSelector.SelectSkill(weapon, target);
+                WeaponConfig weapon = context.Combat.CurrentWeaponConfig;
+                SkillConfig skill = context.SkillSelector.SelectSkill(weapon, target);
 
                 if (skill != null)
                 {
                     context.SkillController.TryCast(
                         skill,
-                        new FMBG.Skills.SkillCastRequest(target.position, target));
+                        new SkillCastRequest(target.position, target));
                     return;
                 }
             }

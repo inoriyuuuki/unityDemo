@@ -19,6 +19,7 @@ namespace FMBG.UI
         [SerializeField] private Color cdTextColor = Color.white;
 
         private GUIStyle labelStyle;
+        private GUIStyle nameStyle;
 
         private void OnGUI()
         {
@@ -34,6 +35,11 @@ namespace FMBG.UI
                     fontSize = 18,
                     fontStyle = FontStyle.Bold,
                     alignment = TextAnchor.MiddleCenter
+                };
+                nameStyle = new GUIStyle(GUI.skin.label)
+                {
+                    fontSize = 12,
+                    alignment = TextAnchor.UpperCenter
                 };
             }
 
@@ -52,11 +58,6 @@ namespace FMBG.UI
             GUI.color = Color.white;
 
             // 名称
-            var nameStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = 12,
-                alignment = TextAnchor.UpperCenter
-            };
             GUI.Label(rect, label, nameStyle);
 
             // 冷却剩余时间

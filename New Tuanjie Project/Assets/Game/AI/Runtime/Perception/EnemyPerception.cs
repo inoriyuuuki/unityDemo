@@ -19,6 +19,8 @@ namespace FMBG.AI
         private float lastSeenTime;
         private bool canSeeTarget;
 
+        private readonly Collider[] overlapResults = new Collider[32];
+
         public Transform Target { get; private set; }
         public bool CanSeeTarget => canSeeTarget;
         public float AlertValue => alertValue;
@@ -128,13 +130,14 @@ namespace FMBG.AI
 
         private Transform FindVisibleTarget()
         {
-            Collider[] hits = Physics.OverlapSphere(self.position, settings.viewDistance, targetLayers);
+            int hitCount = Physics.OverlapSphereNonAlloc(
+                self.position, settings.viewDistance, overlapResults, targetLayers);
             Transform best = null;
             float bestScore = float.MaxValue;
 
-            for (int i = 0; i < hits.Length; i++)
+            for (int i = 0; i < hitCount; i++)
             {
-                Transform candidate = hits[i].transform;
+                Transform candidate = overlapResults[i].transform;
 
                 // 跳过已死亡目标（玩家死亡后不再被敌人锁定）
                 if (candidate.TryGetComponentInParent(out IDamageable damageable) &&

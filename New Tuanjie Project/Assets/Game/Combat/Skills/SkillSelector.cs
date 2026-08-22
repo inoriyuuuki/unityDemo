@@ -37,11 +37,6 @@ namespace FMBG.Skills
             return null;
         }
 
-        public bool HasUsableSkillInRange()
-        {
-            return true; // 由 SkillController.TryCast 做精确范围校验
-        }
-
         private bool IsUsable(SkillConfig skill, Transform target)
         {
             if (skillController != null && skillController.IsOnCooldown(skill))

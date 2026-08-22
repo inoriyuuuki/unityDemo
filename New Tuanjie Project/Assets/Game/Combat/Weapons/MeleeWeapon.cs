@@ -71,13 +71,15 @@ namespace FMBG.Combat
 
             if (meleeConfig.DetectDuringEntireActivePhase)
             {
+                // do-while：即使 ActiveDuration 为 0 也至少结算一次命中，避免"挥空"永远无伤害
                 float activeTime = 0f;
-                while (activeTime < meleeConfig.ActiveDuration)
+                do
                 {
                     PerformHitDetection();
                     activeTime += Time.deltaTime;
                     yield return null;
                 }
+                while (activeTime < meleeConfig.ActiveDuration);
             }
             else
             {
@@ -131,6 +133,12 @@ namespace FMBG.Combat
 
                 Vector3 hitPoint = hitResults[i].ClosestPoint(center);
                 target.TakeDamage(CreateDamageInfo(hitPoint));
+
+                // 配置为"单目标"时，一次攻击只结算第一个命中目标
+                if (!meleeConfig.CanHitMultipleTargets)
+                {
+                    break;
+                }
             }
         }
 

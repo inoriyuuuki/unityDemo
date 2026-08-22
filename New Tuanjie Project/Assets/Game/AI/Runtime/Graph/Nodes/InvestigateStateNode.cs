@@ -25,7 +25,7 @@ namespace FMBG.AI
 
         public override void Tick(EnemyContext context, float deltaTime)
         {
-            context.Blackboard.StateTime += deltaTime;
+            // StateTime 由 EnemyStateMachineRunner 统一推进（此处不再重复累加）
 
             // 到达搜索点后原地转向搜索
             if (context.Motor.ReachedDestination())

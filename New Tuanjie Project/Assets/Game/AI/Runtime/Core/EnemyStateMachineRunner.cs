@@ -6,13 +6,7 @@ namespace FMBG.AI
     /// <summary>xNode 状态图运行器：全局转换优先 → 当前状态转换 → Tick。</summary>
     public sealed class EnemyStateMachineRunner : MonoBehaviour
     {
-        [SerializeField] private EnemyStateGraph graph;
-        [SerializeField] private EnemyActor actor;
-        [SerializeField] private EnemyPerception perception;
-        [SerializeField] private EnemyMotor motor;
-        [SerializeField] private CharacterCombat combat;
-        [SerializeField] private Health health;
-
+        // 所有引用都由 EnemyActor.Initialize 统一注入，不在此序列化，避免出现第二份"真相"。
         private EnemyContext context;
         private EnemyStateNode currentState;
         private EnemyAnyStateNode anyStateNode;
@@ -21,15 +15,16 @@ namespace FMBG.AI
         public EnemyStateNode CurrentState => currentState;
         public EnemyContext Context => context;
 
-        public void Initialize(EnemyActor actorRef, EnemyConfig config)
+        public void Initialize(EnemyActor actor, EnemyConfig config)
         {
-            actor = actorRef;
-            graph = config.StateGraph;
-            perception = actorRef.Perception;
-            motor = actorRef.Motor;
-            combat = actorRef.Combat;
-            health = actorRef.Health;
+            if (actor == null || config == null)
+            {
+                Debug.LogError("EnemyStateMachineRunner: actor 或 config 为空。", this);
+                enabled = false;
+                return;
+            }
 
+            EnemyStateGraph graph = config.StateGraph;
             if (graph == null)
             {
                 Debug.LogError("EnemyStateMachineRunner: 状态图为空。", this);
@@ -40,12 +35,12 @@ namespace FMBG.AI
             context = new EnemyContext(
                 actor,
                 config,
-                perception,
-                motor,
-                combat,
-                health,
-                actorRef.SkillController,
-                actorRef.SkillSelector);
+                actor.Perception,
+                actor.Motor,
+                actor.Combat,
+                actor.Health,
+                actor.SkillController,
+                actor.SkillSelector);
 
             EnemyEntryNode entryNode = graph.FindNode<EnemyEntryNode>();
             anyStateNode = graph.FindNode<EnemyAnyStateNode>();
@@ -64,7 +59,7 @@ namespace FMBG.AI
 
         private void Update()
         {
-            if (!initialized || currentState == null)
+            if (!initialized || currentState == null || context == null)
             {
                 return;
             }
@@ -96,7 +91,7 @@ namespace FMBG.AI
 
         public void ChangeState(EnemyStateNode nextState)
         {
-            if (nextState == null)
+            if (nextState == null || context == null)
             {
                 return;
             }

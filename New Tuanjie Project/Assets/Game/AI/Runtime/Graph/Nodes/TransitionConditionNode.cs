@@ -10,7 +10,7 @@ namespace FMBG.AI
     [CreateNodeMenu("Enemy AI/Conditions/Transition Condition")]
     public sealed class TransitionConditionNode : Node
     {
-                // 输入端口类型必须与状态节点输出端口类型（TransitionConditionNode）匹配，
+        // 输入端口类型必须与状态节点输出端口类型（TransitionConditionNode）匹配，
         // 否则 xNode 编辑器会视为非法连接导致节点无法交互。
         [Input] public TransitionConditionNode from;
 

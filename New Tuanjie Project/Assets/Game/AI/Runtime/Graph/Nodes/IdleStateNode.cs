@@ -17,11 +17,8 @@ namespace FMBG.AI
             context.Motor.Stop();
         }
 
-        public override void Tick(EnemyContext context, float deltaTime)
-        {
-            context.Blackboard.StateTime += deltaTime;
-        }
-
+        // 注意：StateTime 由 EnemyStateMachineRunner 统一推进，节点无需（也不应）自行累加，
+        // 否则计时条件（TimerElapsed）会以双倍速度触发。
         public override void Exit(EnemyContext context)
         {
         }

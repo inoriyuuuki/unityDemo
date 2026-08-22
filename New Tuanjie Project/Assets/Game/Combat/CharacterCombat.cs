@@ -42,6 +42,17 @@ namespace FMBG.Combat
             Transform parent = weaponHolder != null ? weaponHolder : transform;
             CurrentWeapon = Instantiate(config.WeaponPrefab, parent);
             CurrentWeapon.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+
+            // 武器挂点在缩放过的手臂/挂点下时，补偿父级缩放，保证武器在世界空间比例正确（否则会被手臂缩放压成几乎不可见）
+            Vector3 parentScale = parent.lossyScale;
+            if (Mathf.Abs(parentScale.x) > 0.0001f && Mathf.Abs(parentScale.y) > 0.0001f && Mathf.Abs(parentScale.z) > 0.0001f)
+            {
+                CurrentWeapon.transform.localScale = new Vector3(
+                    1f / parentScale.x,
+                    1f / parentScale.y,
+                    1f / parentScale.z);
+            }
+
             CurrentWeapon.Initialize(this, config);
         }
 

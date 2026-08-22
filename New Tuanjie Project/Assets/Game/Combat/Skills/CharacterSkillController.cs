@@ -38,6 +38,9 @@ namespace FMBG.Skills
                 return false;
             }
 
+            // 冷却从施法开始时计时（而非动画结束后），CD UI 与手感更符合直觉
+            cooldowns[skill.SkillId] = Time.time + skill.Cooldown;
+
             if (skill.FaceTarget && combat != null)
             {
                 combat.FaceTowards(request.TargetPosition);
@@ -67,10 +70,7 @@ namespace FMBG.Skills
 
         private void FinishSkill(SkillExecutionContext context)
         {
-            if (context != null && context.Skill != null)
-            {
-                cooldowns[context.Skill.SkillId] = Time.time + context.Skill.Cooldown;
-            }
+            // 冷却已在施法开始时登记（TryCast），这里仅负责解锁移动
 
             if (playerController != null)
             {

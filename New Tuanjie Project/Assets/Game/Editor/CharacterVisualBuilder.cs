@@ -35,8 +35,19 @@ namespace FMBG.EditorTools
             var oldFilter = root.GetComponent<MeshFilter>();
             if (oldRenderer != null) Object.DestroyImmediate(oldRenderer);
             if (oldFilter != null) Object.DestroyImmediate(oldFilter);
+            // 碰撞体：玩家用 CharacterController 无需额外胶囊；敌人保留/补齐胶囊供近战与投射物命中检测
             var oldCollider = root.GetComponent<CapsuleCollider>();
-            if (oldCollider != null) Object.DestroyImmediate(oldCollider);
+            if (root.GetComponent<CharacterController>() != null)
+            {
+                if (oldCollider != null) Object.DestroyImmediate(oldCollider);
+            }
+            else
+            {
+                if (oldCollider == null) oldCollider = root.AddComponent<CapsuleCollider>();
+                oldCollider.center = new Vector3(0f, 0.9f, 0f);
+                oldCollider.height = 1.8f;
+                oldCollider.radius = 0.45f;
+            }
 
             // 角色视觉根（实际渲染的对象，避免与逻辑根组件冲突）
             var visRoot = CreateChild(root.transform, "VisualRoot", Vector3.zero);

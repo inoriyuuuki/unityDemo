@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using FMBG.AI;
 using FMBG.Combat;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ namespace FMBG.UI
         [SerializeField] private Health playerHealth;
         [SerializeField] private Health[] enemies;
 
+        private readonly List<Health> trackedEnemies = new();
         private GUIStyle titleStyle;
         private GUIStyle hintStyle;
         private bool finished;
@@ -27,11 +29,45 @@ namespace FMBG.UI
             {
                 foreach (var enemy in enemies)
                 {
-                    if (enemy != null)
-                    {
-                        enemy.Died += OnEnemyDied;
-                    }
+                    RegisterEnemy(enemy);
                 }
+            }
+
+            RefreshSceneEnemies();
+        }
+
+        private void OnDestroy()
+        {
+            if (playerHealth != null)
+            {
+                playerHealth.Died -= OnPlayerDied;
+            }
+
+            foreach (var enemy in trackedEnemies)
+            {
+                if (enemy != null)
+                {
+                    enemy.Died -= OnEnemyDied;
+                }
+            }
+        }
+
+        private void RegisterEnemy(Health enemy)
+        {
+            if (enemy == null || trackedEnemies.Contains(enemy))
+            {
+                return;
+            }
+
+            trackedEnemies.Add(enemy);
+            enemy.Died += OnEnemyDied;
+        }
+
+        private void RefreshSceneEnemies()
+        {
+            foreach (var actor in Object.FindObjectsOfType<EnemyActor>())
+            {
+                RegisterEnemy(actor != null ? actor.Health : null);
             }
         }
 
@@ -60,20 +96,25 @@ namespace FMBG.UI
                 return;
             }
 
-            bool allDead = true;
-            if (enemies != null)
+            // 重新扫描，确保没有手动拖进 enemies 数组的新敌人也参与胜利判定。
+            RefreshSceneEnemies();
+
+            bool hasTrackedEnemy = false;
+            foreach (var enemy in trackedEnemies)
             {
-                foreach (var enemy in enemies)
+                if (enemy == null)
                 {
-                    if (enemy != null && enemy.IsAlive)
-                    {
-                        allDead = false;
-                        break;
-                    }
+                    continue;
+                }
+
+                hasTrackedEnemy = true;
+                if (enemy.IsAlive)
+                {
+                    return;
                 }
             }
 
-            if (allDead)
+            if (hasTrackedEnemy)
             {
                 finished = true;
                 resultText = "胜利！敌人已全灭\n按 R 重新开始";

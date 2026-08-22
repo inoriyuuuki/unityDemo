@@ -173,6 +173,42 @@ namespace FMBG.Tests
             Assert.AreEqual(90f, health.CurrentHealth, "关闭无敌模式后应正常受到伤害");
         }
 
+        [Test]
+        public void GameResult_WaitsUntilEveryEnemyIsDead()
+        {
+            var resultUI = Object.FindObjectOfType<FMBG.UI.GameResultUI>();
+            EnemyActor[] enemyActors = Object.FindObjectsOfType<EnemyActor>();
+            Assert.IsNotNull(resultUI);
+            Assert.GreaterOrEqual(enemyActors.Length, 3, "Main 场景应包含全部战斗敌人");
+
+            FieldInfo finishedField = typeof(FMBG.UI.GameResultUI).GetField(
+                "finished",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(finishedField);
+
+            for (int i = 0; i < enemyActors.Length - 1; i++)
+            {
+                enemyActors[i].Health.TakeDamage(new DamageInfo(
+                    9999f,
+                    player,
+                    player.GetComponent<FactionMember>(),
+                    enemyActors[i].transform.position));
+            }
+
+            Assert.IsFalse((bool)finishedField.GetValue(resultUI),
+                "仍有敌人存活时不能显示胜利");
+
+            EnemyActor lastEnemy = enemyActors[enemyActors.Length - 1];
+            lastEnemy.Health.TakeDamage(new DamageInfo(
+                9999f,
+                player,
+                player.GetComponent<FactionMember>(),
+                lastEnemy.transform.position));
+
+            Assert.IsTrue((bool)finishedField.GetValue(resultUI),
+                "所有敌人死亡后才应显示胜利");
+        }
+
         private static T GetPrivateField<T>(object owner, string fieldName) where T : class
         {
             FieldInfo field = owner.GetType().GetField(

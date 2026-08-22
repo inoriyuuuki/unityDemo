@@ -3,16 +3,16 @@ using UnityEngine;
 
 namespace FMBG.AI
 {
-    /// <summary>xNode 状态图运行器：全局转换优先 → 当前状态转换 → Tick。</summary>
+    /// <summary>状态机运行器：全局死亡转换优先 → 当前状态转换 → Tick。</summary>
     public sealed class EnemyStateMachineRunner : MonoBehaviour
     {
         // 所有引用都由 EnemyActor.Initialize 统一注入，不在此序列化，避免出现第二份"真相"。
         private EnemyContext context;
-        private EnemyStateNode currentState;
-        private EnemyAnyStateNode anyStateNode;
+        private EnemyState currentState;
+        private EnemyState deathState;
         private bool initialized;
 
-        public EnemyStateNode CurrentState => currentState;
+        public EnemyState CurrentState => currentState;
         public EnemyContext Context => context;
 
         public void Initialize(EnemyActor actor, EnemyConfig config)
@@ -42,19 +42,18 @@ namespace FMBG.AI
                 actor.SkillController,
                 actor.SkillSelector);
 
-            EnemyEntryNode entryNode = graph.FindNode<EnemyEntryNode>();
-            anyStateNode = graph.FindNode<EnemyAnyStateNode>();
-
-            if (entryNode == null)
+            EnemyStateMachineCompiler.CompiledGraph compiled = EnemyStateMachineCompiler.Compile(graph);
+            if (compiled.Entry == null)
             {
-                Debug.LogError("EnemyStateGraph缺少Entry节点。", this);
+                Debug.LogError("EnemyStateGraph 缺少有效 Entry 状态。", this);
                 enabled = false;
                 return;
             }
 
+            deathState = compiled.Death;
             initialized = true;
             enabled = true; // 确保组件启用（场景可能保存为禁用状态）
-            ChangeState(entryNode.GetStartState());
+            ChangeState(compiled.Entry);
         }
 
         private void Update()
@@ -68,18 +67,17 @@ namespace FMBG.AI
             context.Blackboard.StateTime += deltaTime;
 
             // 全局转换优先（例如死亡）
-            EnemyStateNode globalNext = anyStateNode != null
-                ? anyStateNode.EvaluateTransition(context)
-                : null;
-
-            if (globalNext != null && globalNext != currentState)
+            if (deathState != null &&
+                deathState != currentState &&
+                context.Health != null &&
+                !context.Health.IsAlive)
             {
-                ChangeState(globalNext);
+                ChangeState(deathState);
                 return;
             }
 
             // 当前状态转换
-            EnemyStateNode nextState = currentState.EvaluateTransition(context);
+            EnemyState nextState = currentState.EvaluateTransitions(context);
             if (nextState != null && nextState != currentState)
             {
                 ChangeState(nextState);
@@ -89,7 +87,7 @@ namespace FMBG.AI
             currentState.Tick(context, deltaTime);
         }
 
-        public void ChangeState(EnemyStateNode nextState)
+        public void ChangeState(EnemyState nextState)
         {
             if (nextState == null || context == null)
             {

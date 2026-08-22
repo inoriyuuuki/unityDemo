@@ -85,8 +85,8 @@ namespace FMBG.Tests
             yield return new WaitForSeconds(3f);
 
             Assert.IsTrue(perception.CanSeeTarget, "敌人应能看到玩家");
-            Assert.IsTrue(runner.CurrentState is ChaseStateNode or AttackStateNode,
-                "敌人应进入 Chase/Attack，实际: " + (runner.CurrentState?.GetType().Name ?? "null"));
+            Assert.IsTrue(runner.CurrentState is { Type: EnemyStateType.Chase or EnemyStateType.Attack },
+                "敌人应进入 Chase/Attack，实际: " + (runner.CurrentState?.Type ?? EnemyStateType.Idle));
 
             Object.Destroy(go);
             Object.Destroy(playerGo);
@@ -118,8 +118,8 @@ namespace FMBG.Tests
 
             // 最终应回到巡逻/闲置
             yield return new WaitForSeconds(6f);
-            Assert.IsTrue(runner.CurrentState is PatrolStateNode or IdleStateNode,
-                "敌人应回到 Patrol/Idle，实际: " + (runner.CurrentState?.GetType().Name ?? "null"));
+            Assert.IsTrue(runner.CurrentState is { Type: EnemyStateType.Patrol or EnemyStateType.Idle },
+                "敌人应回到 Patrol/Idle，实际: " + (runner.CurrentState?.Type ?? EnemyStateType.Idle));
 
             Object.Destroy(go);
             Object.Destroy(playerGo);

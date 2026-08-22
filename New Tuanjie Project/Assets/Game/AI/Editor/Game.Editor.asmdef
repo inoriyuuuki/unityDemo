@@ -1,20 +1,20 @@
 {
-    "name": "Game.Editor",
-    "references": [
-        "Game.Runtime",
-        "XNode",
-        "XNodeEditor",
-        "SLATE"
-    ],
-    "includePlatforms": [
-        "Editor"
-    ],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+  "name": "Game.Editor",
+  "references": [
+    "Game.Runtime",
+    "SLATE",
+    "UnityEditor.GraphViewModule",
+    "UnityEngine.UIElementsModule"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
 }

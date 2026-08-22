@@ -32,7 +32,7 @@ namespace FMBG.AI
         Always
     }
 
-    /// <summary>状态切换条件：可在 xNode Inspector 中配置。</summary>
+    /// <summary>状态切换条件：可在 GraphView 编辑器中配置。</summary>
     [Serializable]
     public sealed class TransitionCondition
     {
@@ -58,6 +58,9 @@ namespace FMBG.AI
         {
             this.type = type;
         }
+
+        /// <summary>供编辑器设置条件类型。</summary>
+        public void SetType(TransitionConditionType value) => type = value;
 
         /// <summary>供编辑器/工厂设置阈值参数。</summary>
         public void SetDuration(float value) => duration = Mathf.Max(0f, value);

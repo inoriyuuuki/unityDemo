@@ -1,6 +1,6 @@
 namespace FMBG.AI
 {
-    /// <summary>敌人运行时数据，xNode 节点不保存运行时状态。</summary>
+    /// <summary>敌人运行时数据，状态机节点不保存运行时状态。</summary>
     public sealed class EnemyBlackboard
     {
         public float StateTime;

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace FMBG.Tests
 {
-    /// <summary>T6 xNode 图校验器。</summary>
+    /// <summary>T6 状态图校验器。</summary>
     public class GraphValidatorTests
     {
         [Test]

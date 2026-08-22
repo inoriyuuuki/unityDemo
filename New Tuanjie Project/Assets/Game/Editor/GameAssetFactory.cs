@@ -6,11 +6,10 @@ using FMBG.SlateClips;
 using Slate;
 using UnityEditor;
 using UnityEngine;
-using XNode;
 
 namespace FMBG.EditorTools
 {
-    /// <summary>一键生成演示所需的配置资产与 xNode 状态图。</summary>
+    /// <summary>一键生成演示所需的配置资产与 GraphView 状态图。</summary>
     public static class GameAssetFactory
     {
         [MenuItem("Game/Tools/Create Demo Assets")]
@@ -35,72 +34,19 @@ namespace FMBG.EditorTools
         }
 
         /// <summary>创建条件节点并连接：statePort -> conditionNode -> targetState。</summary>
-        private static TransitionConditionNode ConnectWithCondition(
-            EnemyStateNode fromNode,
-            string portName,
-            TransitionConditionType type,
-            EnemyStateNode target,
+        private static EnemyTransitionData AddTransition(
+            EnemyStateGraph graph,
+            EnemyStateNodeData from,
+            EnemyStateNodeData to,
+            TransitionCondition condition,
             Vector2 position)
         {
-            var conditionNode = ConnectWithCondition(fromNode, portName, 0f, type, target, position);
-            return conditionNode;
-        }
-
-        /// <summary>创建条件节点并连接（带阈值参数）。</summary>
-        private static TransitionConditionNode ConnectWithCondition(
-            EnemyStateNode fromNode,
-            string portName,
-            float threshold,
-            TransitionConditionType type,
-            EnemyStateNode target,
-            Vector2 position)
-        {
-            if (fromNode == null || target == null)
+            if (graph == null || from == null || to == null)
             {
                 return null;
             }
 
-            // 创建条件节点
-            var conditionNode = CreateNode<TransitionConditionNode>((EnemyStateGraph)fromNode.graph);
-            conditionNode.position = position;
-            conditionNode.condition = new TransitionCondition(type);
-
-            switch (type)
-            {
-                case TransitionConditionType.TimerElapsed:
-                    conditionNode.condition.SetDuration(threshold > 0f ? threshold : 2f);
-                    break;
-                case TransitionConditionType.TargetInAttackRange:
-                case TransitionConditionType.TargetOutOfAttackRange:
-                    conditionNode.condition.SetTolerance(threshold);
-                    break;
-            }
-
-            // 连接：状态输出端口 -> 条件节点 from 输入端口
-            fromNode.GetOutputPort(portName).Connect(conditionNode.GetInputPort("from"));
-            // 连接：条件节点 target 输出端口 -> 目标状态 entry 输入端口
-            conditionNode.GetOutputPort("target").Connect(target.GetInputPort("entry"));
-
-            EditorUtility.SetDirty(conditionNode);
-            EditorUtility.SetDirty(fromNode);
-            return conditionNode;
-        }
-
-        private static T CreateNode<T>(EnemyStateGraph graph) where T : Node
-        {
-            Node node = graph.AddNode(typeof(T));
-            if (node == null)
-            {
-                return null;
-            }
-
-            node.name = typeof(T).Name;
-            if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(graph)))
-            {
-                AssetDatabase.AddObjectToAsset(node, graph);
-            }
-
-            return node as T;
+            return graph.AddTransition(from.Id, to.Id, condition, position);
         }
 
         private static void EnsureFolder(string path)
@@ -148,7 +94,9 @@ namespace FMBG.EditorTools
             asset.SetDamage(12f);
             asset.SetTiming(0.1f, 0.1f, 0.3f);
             asset.SetRanges(0f, 9f, 6f);
-            asset.SetProjectile(null, 18f, 2.5f, 0f, 1);
+            asset.SetProjectile(
+                AssetDatabase.LoadAssetAtPath<FMBG.Combat.Projectile>("Assets/Game/Prefabs/Projectile_Pistol.prefab"),
+                18f, 2.5f, 0f, 1);
             asset.SetTargetLayers(LayerMask.GetMask("Enemy", "Player"));
             EditorUtility.SetDirty(asset);
             return asset;
@@ -162,64 +110,53 @@ namespace FMBG.EditorTools
                 return null;
             }
 
-            // 清空旧节点（用 xNode 的 RemoveNode，避免残留已销毁引用）
-            while (graph.nodes.Count > 0)
-            {
-                Node node = graph.nodes[graph.nodes.Count - 1];
-                graph.RemoveNode(node);
-                Object.DestroyImmediate(node, true);
-            }
-            AssetDatabase.SaveAssets();
+            graph.Clear();
 
-            // 创建节点（与 NodeGraphEditor.CreateNode 一致：AddNode + AddObjectToAsset）
-            var entry = CreateNode<EnemyEntryNode>(graph);
-            var any = CreateNode<EnemyAnyStateNode>(graph);
-            var idle = CreateNode<IdleStateNode>(graph);
-            var patrol = CreateNode<PatrolStateNode>(graph);
-            var chase = CreateNode<ChaseStateNode>(graph);
-            var attack = CreateNode<AttackStateNode>(graph);
-            var investigate = CreateNode<InvestigateStateNode>(graph);
-            var returnNode = CreateNode<ReturnStateNode>(graph);
-            var dead = CreateNode<DeadStateNode>(graph);
+            graph.EntryNodePosition = new Vector2(-600f, 0f);
+            graph.AnyStateNodePosition = new Vector2(300f, 300f);
 
-            entry.position = new Vector2(-600, 0);
-            any.position = new Vector2(300, 300);
-            idle.position = new Vector2(-300, -100);
-            patrol.position = new Vector2(-300, 100);
-            chase.position = new Vector2(0, 0);
-            attack.position = new Vector2(300, -100);
-            investigate.position = new Vector2(300, 100);
-            returnNode.position = new Vector2(600, 150);
-            dead.position = new Vector2(600, -250);
+            var idle = graph.AddState(EnemyStateType.Idle, new Vector2(-300f, -100f));
+            var patrol = graph.AddState(EnemyStateType.Patrol, new Vector2(-300f, 100f));
+            var chase = graph.AddState(EnemyStateType.Chase, new Vector2(0f, 0f));
+            var attack = graph.AddState(EnemyStateType.Attack, new Vector2(300f, -100f));
+            var investigate = graph.AddState(EnemyStateType.Investigate, new Vector2(300f, 100f));
+            var returnNode = graph.AddState(EnemyStateType.Return, new Vector2(600f, 150f));
+            var dead = graph.AddState(EnemyStateType.Dead, new Vector2(600f, -250f));
 
-            // 连接：入口与全局死亡
-            entry.GetOutputPort("start").Connect(idle.GetInputPort("entry"));
-            any.GetOutputPort("dead").Connect(dead.GetInputPort("entry"));
+            graph.SetEntry(idle.Id);
+            graph.SetDeathTarget(dead.Id);
 
-            // 可视化条件节点连线：状态输出端口 -> 条件节点 -> 目标状态
             // Idle
-            ConnectWithCondition(idle, "patrol", idle.idleDuration, TransitionConditionType.TimerElapsed, patrol, new Vector2(-150, -80));
-            ConnectWithCondition(idle, "chase", TransitionConditionType.TargetVisible, chase, new Vector2(-150, -20));
+            var idleToPatrol = new TransitionCondition(TransitionConditionType.TimerElapsed);
+            idleToPatrol.SetDuration(2f);
+            AddTransition(graph, idle, patrol, idleToPatrol, new Vector2(-150f, -80f));
+            AddTransition(graph, idle, chase, new TransitionCondition(TransitionConditionType.TargetVisible), new Vector2(-150f, -20f));
 
             // Patrol
-            ConnectWithCondition(patrol, "idle", TransitionConditionType.ReachedDestination, idle, new Vector2(-150, 140));
-            ConnectWithCondition(patrol, "chase", TransitionConditionType.TargetVisible, chase, new Vector2(-150, 200));
+            AddTransition(graph, patrol, idle, new TransitionCondition(TransitionConditionType.ReachedDestination), new Vector2(-150f, 140f));
+            AddTransition(graph, patrol, chase, new TransitionCondition(TransitionConditionType.TargetVisible), new Vector2(-150f, 200f));
 
             // Chase
-            ConnectWithCondition(chase, "attack", TransitionConditionType.TargetInAttackRange, attack, new Vector2(150, 20));
-            ConnectWithCondition(chase, "investigate", TransitionConditionType.TargetLost, investigate, new Vector2(150, 80));
+            var inRange = new TransitionCondition(TransitionConditionType.TargetInAttackRange);
+            inRange.SetTolerance(0f);
+            AddTransition(graph, chase, attack, inRange, new Vector2(150f, 20f));
+            AddTransition(graph, chase, investigate, new TransitionCondition(TransitionConditionType.TargetLost), new Vector2(150f, 80f));
 
             // Attack
-            ConnectWithCondition(attack, "chase", attack.exitRangeTolerance, TransitionConditionType.TargetOutOfAttackRange, chase, new Vector2(450, -80));
-            ConnectWithCondition(attack, "investigate", TransitionConditionType.TargetLost, investigate, new Vector2(450, -20));
+            var outOfRange = new TransitionCondition(TransitionConditionType.TargetOutOfAttackRange);
+            outOfRange.SetTolerance(0.4f);
+            AddTransition(graph, attack, chase, outOfRange, new Vector2(450f, -80f));
+            AddTransition(graph, attack, investigate, new TransitionCondition(TransitionConditionType.TargetLost), new Vector2(450f, -20f));
 
             // Investigate
-            ConnectWithCondition(investigate, "chase", TransitionConditionType.TargetVisible, chase, new Vector2(450, 140));
-            ConnectWithCondition(investigate, "returnNode", investigate.investigateDuration, TransitionConditionType.TimerElapsed, returnNode, new Vector2(450, 200));
+            AddTransition(graph, investigate, chase, new TransitionCondition(TransitionConditionType.TargetVisible), new Vector2(450f, 140f));
+            var investigateTimer = new TransitionCondition(TransitionConditionType.TimerElapsed);
+            investigateTimer.SetDuration(3f);
+            AddTransition(graph, investigate, returnNode, investigateTimer, new Vector2(450f, 200f));
 
             // Return
-            ConnectWithCondition(returnNode, "patrol", TransitionConditionType.ReachedDestination, patrol, new Vector2(750, 180));
-            ConnectWithCondition(returnNode, "chase", TransitionConditionType.TargetVisible, chase, new Vector2(750, 240));
+            AddTransition(graph, returnNode, patrol, new TransitionCondition(TransitionConditionType.ReachedDestination), new Vector2(750f, 180f));
+            AddTransition(graph, returnNode, chase, new TransitionCondition(TransitionConditionType.TargetVisible), new Vector2(750f, 240f));
 
             graph.name = "Enemy_DefaultGraph";
             EditorUtility.SetDirty(graph);
@@ -290,10 +227,10 @@ namespace FMBG.EditorTools
             skill.name = "Skill_SwordSlash";
             SetField(skill, "skillId", "sword_slash");
             SetField(skill, "displayName", "挥剑斩");
-            SetField(skill, "targetType", SkillTargetType.Unit);
+            SetField(skill, "targetType", SkillTargetType.Direction);
             SetField(skill, "cooldown", 1.2f);
             SetField(skill, "minCastRange", 0f);
-            SetField(skill, "maxCastRange", 2.5f);
+            SetField(skill, "maxCastRange", 1.8f);
             SetField(skill, "lockMovement", true);
             SetField(skill, "faceTarget", true);
             SetField(skill, "canBeInterrupted", true);
